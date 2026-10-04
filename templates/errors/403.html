@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Denied - ProAssets</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        .container {
+            text-align: center;
+            background: white;
+            padding: 3rem 2rem;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .error-code {
+            font-size: 6rem;
+            color: #F59E0B;
+            font-weight: bold;
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+        
+        p {
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+        
+        .emoji {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #F59E0B;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #D97706;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #E5E7EB;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #D1D5DB;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="emoji">🔐</div>
+        <div class="error-code">403</div>
+        <h1>Access Denied</h1>
+        <p>You don't have permission to access this page. Please login or contact support if you believe this is an error.</p>
+        
+        <div class="buttons">
+            <a href="/login" class="btn btn-primary">Login</a>
+            <a href="/" class="btn btn-secondary">Go Home</a>
+        </div>
+    </div>
+</body>
+</html>

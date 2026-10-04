@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+            color: white;
+            padding: 1rem 0;
+        }
+        
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 3rem;
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .section {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            color: #7C3AED;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section p {
+            line-height: 1.8;
+            margin-bottom: 1rem;
+            color: #666;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .feature {
+            text-align: center;
+            padding: 1.5rem;
+            background: #F3F4F6;
+            border-radius: 10px;
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature h3 {
+            color: #7C3AED;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .team {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .team-member {
+            text-align: center;
+            background: #F3F4F6;
+            padding: 1.5rem;
+            border-radius: 10px;
+        }
+        
+        .team-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7C3AED, #6D28D9);
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+        
+        .team-member h3 {
+            color: #7C3AED;
+            margin-bottom: 0.5rem;
+        }
+        
+        .team-member p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .values {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .value {
+            padding: 1.5rem;
+            border-left: 4px solid #7C3AED;
+            background: #E0E7FF;
+        }
+        
+        .value h3 {
+            color: #7C3AED;
+            margin-bottom: 0.5rem;
+        }
+        
+        .value p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .cta {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+            color: white;
+            border-radius: 10px;
+            margin-top: 3rem;
+        }
+        
+        .cta h2 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: white;
+            color: #7C3AED;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        footer {
+            background: #1F2937;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">💎 ProAssets</div>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/products">Products</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+            <ul>
+                <li><a href="/login">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Hero -->
+        <div class="hero">
+            <h1>About ProAssets 💎</h1>
+            <p>Empowering creators and connecting buyers with digital excellence</p>
+        </div>
+
+        <!-- Our Story -->
+        <div class="section">
+            <h2>Our Story</h2>
+            <p>
+                ProAssets was founded with a simple mission: to create a global marketplace 
+                where creative professionals can share their work and earn fairly.
+            </p>
+            <p>
+                We believe that digital creators deserve a platform that respects their work, 
+                protects their interests, and provides them with the tools to succeed.
+            </p>
+            <p>
+                Whether you're a writer, designer, developer, or entrepreneur, ProAssets is 
+                your gateway to a worldwide audience of buyers looking for quality digital assets.
+            </p>
+        </div>
+
+        <!-- Our Mission -->
+        <div class="section">
+            <h2>Our Mission</h2>
+            <p>
+                To build a fair, transparent, and secure marketplace that empowers creators 
+                to monetize their digital assets while providing buyers with access to high-quality 
+                products at reasonable prices.
+            </p>
+        </div>
+
+        <!-- Features -->
+        <div class="section">
+            <h2>Why Choose ProAssets?</h2>
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">🌍</div>
+                    <h3>Global Reach</h3>
+                    <p>Sell to customers around the world in multiple currencies and languages</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">💰</div>
+                    <h3>Fair Commission</h3>
+                    <p>Keep 80% of your sales. We only take 20% to maintain our platform</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Secure & Reliable</h3>
+                    <p>Your data and transactions are protected with enterprise-grade security</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📊</div>
+                    <h3>Analytics & Insights</h3>
+                    <p>Track your sales, earnings, and customer behavior in real-time</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Instant Delivery</h3>
+                    <p>Customers receive their purchases instantly after payment</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🤝</div>
+                    <h3>Support</h3>
+                    <p>Our dedicated team is here to help you succeed</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Our Values -->
+        <div class="section">
+            <h2>Our Core Values</h2>
+            <div class="values">
+                <div class="value">
+                    <h3>Integrity</h3>
+                    <p>We operate with transparency and honesty in all our dealings</p>
+                </div>
+                <div class="value">
+                    <h3>Quality</h3>
+                    <p>We maintain high standards for all products on our platform</p>
+                </div>
+                <div class="value">
+                    <h3>Innovation</h3>
+                    <p>We constantly improve our platform with new features and tools</p>
+                </div>
+                <div class="value">
+                    <h3>Community</h3>
+                    <p>We foster a supportive community of creators and buyers</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Team -->
+        <div class="section">
+            <h2>Our Team</h2>
+            <div class="team">
+                <div class="team-member">
+                    <div class="team-avatar">👨‍💼</div>
+                    <h3>Founder & CEO</h3>
+                    <p>Passionate about empowering creators</p>
+                </div>
+                <div class="team-member">
+                    <div class="team-avatar">👨‍💻</div>
+                    <h3>CTO</h3>
+                    <p>Building robust technology solutions</p>
+                </div>
+                <div class="team-member">
+                    <div class="team-avatar">👩‍💼</div>
+                    <h3>Operations</h3>
+                    <p>Ensuring smooth platform operations</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="cta">
+            <h2>Ready to Join Us?</h2>
+            <p style="margin-bottom: 1.5rem;">Start selling or buying digital assets today</p>
+            <a href="/register" class="btn">Get Started</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 ProAssets. All rights reserved.</p>
+    </footer>
+</body>
+</html>

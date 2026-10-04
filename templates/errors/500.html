@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Error - ProAssets</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        .container {
+            text-align: center;
+            background: white;
+            padding: 3rem 2rem;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .error-code {
+            font-size: 6rem;
+            color: #DC2626;
+            font-weight: bold;
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+        
+        p {
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+        
+        .emoji {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #DC2626;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #B91C1C;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #E5E7EB;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #D1D5DB;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="emoji">⚠️</div>
+        <div class="error-code">500</div>
+        <h1>Server Error</h1>
+        <p>Something went wrong on our end. Our team has been notified and is working to fix it.</p>
+        
+        <div class="buttons">
+            <a href="/" class="btn btn-primary">Go Home</a>
+            <a href="/contact" class="btn btn-secondary">Report Issue</a>
+        </div>
+    </div>
+</body>
+</html>

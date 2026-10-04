@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+        
+        nav a:hover {
+            opacity: 0.8;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #7C3AED;
+        }
+        
+        .filters-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .search-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .search-bar input,
+        .search-bar select {
+            flex: 1;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .search-bar button {
+            padding: 0.8rem 2rem;
+            background: #7C3AED;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .search-bar button:hover {
+            background: #6D28D9;
+        }
+        
+        .active-filters {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-tag {
+            background: #E0E7FF;
+            color: #7C3AED;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .filter-tag button {
+            background: none;
+            border: none;
+            color: #7C3AED;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, #7C3AED, #6D28D9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+        
+        .product-info {
+            padding: 1.5rem;
+        }
+        
+        .product-category {
+            font-size: 0.8rem;
+            color: #7C3AED;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        
+        .product-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+            height: 2.2em;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        
+        .product-description {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 1rem;
+            height: 2em;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .price {
+            font-size: 1.4rem;
+            color: #7C3AED;
+            font-weight: bold;
+        }
+        
+        .rating {
+            color: #FBBF24;
+        }
+        
+        .btn {
+            padding: 0.6rem 1.2rem;
+            background: #7C3AED;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .btn:hover {
+            background: #6D28D9;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+        
+        .pagination a,
+        .pagination span {
+            padding: 0.5rem 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #7C3AED;
+        }
+        
+        .pagination a:hover {
+            background: #E0E7FF;
+        }
+        
+        .pagination .active {
+            background: #7C3AED;
+            color: white;
+            border-color: #7C3AED;
+        }
+        
+        .no-products {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 10px;
+        }
+        
+        .no-products h3 {
+            color: #7C3AED;
+            margin-bottom: 1rem;
+        }
+        
+        footer {
+            background: #1F2937;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header/Navigation -->
+    <header>
+        <nav>
+            <div class="logo">💎 ProAssets</div>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/products">Products</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+            <ul>
+                <li><a href="/cart">🛒 Cart</a></li>
+                <li><a href="/login">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">Browse Products</h1>
+        
+        <!-- Filters -->
+        <div class="filters-section">
+            <form method="GET" class="search-bar">
+                <input type="text" name="search" placeholder="Search products..." value="{{ search_query or '' }}">
+                <select name="category">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                    <option value="{{ category.id }}" {% if current_category and category.id == current_category|int %}selected{% endif %}>
+                        {{ category.name_en }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Search</button>
+            </form>
+            
+            {% if search_query or current_category %}
+            <div class="active-filters">
+                {% if search_query %}
+                <div class="filter-tag">
+                    Search: "{{ search_query }}"
+                    <a href="/products">✕</a>
+                </div>
+                {% endif %}
+                {% if current_category %}
+                <div class="filter-tag">
+                    Category filter active
+                    <a href="/products">✕</a>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Products Grid -->
+        {% if products %}
+        <div class="products-grid">
+            {% for product in products %}
+            <div class="product-card">
+                <div class="product-image">📦</div>
+                <div class="product-info">
+                    <div class="product-category">{{ product.name_en if product.name_en else 'Product' }}</div>
+                    <h3 class="product-title">{{ product.title_en }}</h3>
+                    <p class="product-description">{{ product.description_en }}</p>
+                    <div class="product-footer">
+                        <div>
+                            <div class="price">${{ product.price }}</div>
+                            <div class="rating">⭐ {{ product.rating or 'N/A' }}</div>
+                        </div>
+                        <a href="/product/{{ product.slug }}" class="btn">View</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if total_pages > 1 %}
+        <div class="pagination">
+            {% if current_page > 1 %}
+            <a href="/products?page=1&search={{ search_query or '' }}&category={{ current_category or '' }}">« First</a>
+            <a href="/products?page={{ current_page - 1 }}&search={{ search_query or '' }}&category={{ current_category or '' }}">‹ Previous</a>
+            {% endif %}
+            
+            {% for page_num in range(1, total_pages + 1) %}
+                {% if page_num == current_page %}
+                <span class="active">{{ page_num }}</span>
+                {% elif page_num <= current_page + 2 and page_num >= current_page - 2 %}
+                <a href="/products?page={{ page_num }}&search={{ search_query or '' }}&category={{ current_category or '' }}">{{ page_num }}</a>
+                {% endif %}
+            {% endfor %}
+            
+            {% if current_page < total_pages %}
+            <a href="/products?page={{ current_page + 1 }}&search={{ search_query or '' }}&category={{ current_category or '' }}">Next ›</a>
+            <a href="/products?page={{ total_pages }}&search={{ search_query or '' }}&category={{ current_category or '' }}">Last »</a>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        {% else %}
+        <div class="no-products">
+            <h3>No Products Found</h3>
+            <p>Try adjusting your search or filters</p>
+            <a href="/products" class="btn">View All Products</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 ProAssets. All rights reserved.</p>
+    </footer>
+</body>
+</html>

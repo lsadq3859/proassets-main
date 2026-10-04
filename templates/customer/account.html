@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+            color: white;
+            padding: 1rem 0;
+        }
+        
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 2rem;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .page-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .page-header h1 {
+            color: #7C3AED;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #ddd;
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .tab-btn {
+            padding: 0.8rem 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            color: #7C3AED;
+            border-bottom-color: #7C3AED;
+        }
+        
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #7C3AED;
+            box-shadow: 0 0 5px rgba(124, 58, 237, 0.3);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7C3AED, #6D28D9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .avatar-upload {
+            margin-bottom: 1.5rem;
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .file-input-wrapper input[type="file"] {
+            display: none;
+        }
+        
+        .file-input-label {
+            padding: 0.8rem 1.5rem;
+            background: #7C3AED;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            display: inline-block;
+            transition: background 0.3s;
+        }
+        
+        .file-input-label:hover {
+            background: #6D28D9;
+        }
+        
+        .btn {
+            padding: 0.8rem 1.5rem;
+            background: #7C3AED;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+            margin-right: 1rem;
+        }
+        
+        .btn:hover {
+            background: #6D28D9;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #7C3AED;
+            border: 2px solid #7C3AED;
+        }
+        
+        .btn-secondary:hover {
+            background: #E0E7FF;
+        }
+        
+        .btn-danger {
+            background: #DC2626;
+        }
+        
+        .btn-danger:hover {
+            background: #B91C1C;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        .alert-success {
+            background: #DCFCE7;
+            color: #16A34A;
+            border: 1px solid #86EFAC;
+        }
+        
+        .alert-error {
+            background: #FEE2E2;
+            color: #DC2626;
+            border: 1px solid #FECACA;
+        }
+        
+        .info-box {
+            background: #E0E7FF;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            color: #4C1D95;
+        }
+        
+        .danger-zone {
+            background: #FEE2E2;
+            padding: 1.5rem;
+            border-radius: 5px;
+            border: 2px solid #FECACA;
+        }
+        
+        .danger-zone h3 {
+            color: #991B1B;
+            margin-bottom: 1rem;
+        }
+        
+        footer {
+            background: #1F2937;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">💎 ProAssets</div>
+            <div>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/library">Library</a>
+                <a href="/account">Account</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>⚙️ Account Settings</h1>
+            <p style="color: #666; margin-top: 0.5rem;">Manage your account and preferences</p>
+        </div>
+
+        <!-- Alerts -->
+        <div class="alert alert-success" id="successAlert"></div>
+        <div class="alert alert-error" id="errorAlert"></div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('profile')">👤 Profile</button>
+            <button class="tab-btn" onclick="switchTab('security')">🔐 Security</button>
+            <button class="tab-btn" onclick="switchTab('preferences')">⚙️ Preferences</button>
+            <button class="tab-btn" onclick="switchTab('danger')">⚠️ Danger Zone</button>
+        </div>
+
+        <!-- Profile Tab -->
+        <div id="profile" class="tab-content active">
+            <h2 style="color: #7C3AED; margin-bottom: 1.5rem;">Profile Information</h2>
+            
+            <div class="avatar-upload">
+                <div class="profile-avatar">👤</div>
+                <div class="file-input-wrapper">
+                    <label for="avatarInput" class="file-input-label">📷 Upload Avatar</label>
+                    <input type="file" id="avatarInput" accept="image/*">
+                </div>
+            </div>
+
+            <form id="profileForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" name="first_name" value="{{ user.first_name or '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" name="last_name" value="{{ user.last_name or '' }}">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" value="{{ user.email }}" disabled>
+                    <small style="color: #666;">Email cannot be changed</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="bio">Bio</label>
+                    <textarea id="bio" name="bio" placeholder="Tell us about yourself...">{{ user.bio or '' }}</textarea>
+                    <small style="color: #666;">Max 500 characters</small>
+                </div>
+
+                <div>
+                    <button type="submit" class="btn">💾 Save Changes</button>
+                    <button type="reset" class="btn btn-secondary">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Security Tab -->
+        <div id="security" class="tab-content">
+            <h2 style="color: #7C3AED; margin-bottom: 1.5rem;">Security Settings</h2>
+            
+            <div class="info-box">
+                ℹ️ Keep your account secure by updating your password regularly
+            </div>
+
+            <form id="securityForm">
+                <div class="form-group">
+                    <label for="currentPassword">Current Password *</label>
+                    <input type="password" id="currentPassword" name="current_password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="newPassword">New Password *</label>
+                    <input type="password" id="newPassword" name="new_password" required>
+                    <small style="color: #666;">At least 8 characters</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm New Password *</label>
+                    <input type="password" id="confirmPassword" name="confirm_password" required>
+                </div>
+
+                <div>
+                    <button type="submit" class="btn">🔐 Update Password</button>
+                    <button type="reset" class="btn btn-secondary">Cancel</button>
+                </div>
+            </form>
+
+            <hr style="margin: 2rem 0; border: none; border-top: 1px solid #ddd;">
+
+            <h3 style="color: #333; margin-bottom: 1rem;">Active Sessions</h3>
+            <p style="color: #666; margin-bottom: 1rem;">
+                You are currently logged in on this device. 
+                <a href="/logout" style="color: #7C3AED;">Logout all other sessions</a>
+            </p>
+        </div>
+
+        <!-- Preferences Tab -->
+        <div id="preferences" class="tab-content">
+            <h2 style="color: #7C3AED; margin-bottom: 1.5rem;">Preferences</h2>
+            
+            <form id="preferencesForm">
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="email_notifications" checked>
+                        📧 Email me about new products
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="marketing_emails" checked>
+                        🎉 Send me special offers and promotions
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="order_updates" checked>
+                        📦 Notify me about order updates
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label for="currency">Preferred Currency</label>
+                    <select style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px;">
+                        <option value="USD">USD - US Dollar</option>
+                        <option value="EUR">EUR - Euro</option>
+                        <option value="GBP">GBP - British Pound</option>
+                        <option value="AED">AED - UAE Dirham</option>
+                    </select>
+                </div>
+
+                <div>
+                    <button type="submit" class="btn">💾 Save Preferences</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Danger Zone Tab -->
+        <div id="danger" class="tab-content">
+            <div class="danger-zone">
+                <h3>⚠️ Danger Zone</h3>
+                <p style="margin-bottom: 1rem; color: #666;">
+                    These actions are irreversible. Please proceed with caution.
+                </p>
+
+                <h4 style="color: #991B1B; margin-bottom: 1rem;">Delete Account</h4>
+                <p style="color: #666; margin-bottom: 1rem;">
+                    Permanently delete your account and all associated data. This cannot be undone.
+                </p>
+                <button type="button" class="btn btn-danger" onclick="deleteAccount()">
+                    🗑️ Delete My Account
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 ProAssets. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Profile form
+        document.getElementById('profileForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const data = {
+                first_name: document.getElementById('firstName').value,
+                last_name: document.getElementById('lastName').value,
+                bio: document.getElementById('bio').value
+            };
+
+            try {
+                const response = await fetch('/account/update', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    showAlert('✅ Profile updated successfully!', 'success');
+                } else {
+                    showAlert('❌ Error updating profile', 'error');
+                }
+            } catch (error) {
+                showAlert('❌ An error occurred', 'error');
+            }
+        });
+
+        // Security form
+        document.getElementById('securityForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (newPassword !== confirmPassword) {
+                showAlert('❌ Passwords do not match', 'error');
+                return;
+            }
+
+            showAlert('✅ Password update feature coming soon!', 'success');
+        });
+
+        // Delete account
+        function deleteAccount() {
+            const confirmed = confirm('⚠️ Are you absolutely sure? This cannot be undone!\n\nType "DELETE" to confirm.');
+            if (confirmed) {
+                showAlert('🗑️ Account deletion feature coming soon!', 'success');
+            }
+        }
+
+        // Show alerts
+        function showAlert(message, type) {
+            const alert = type === 'success' 
+                ? document.getElementById('successAlert')
+                : document.getElementById('errorAlert');
+            
+            alert.textContent = message;
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

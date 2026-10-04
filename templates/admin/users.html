@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+            color: white;
+            padding: 1rem 0;
+        }
+        
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .page-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .page-header h1 {
+            color: #7C3AED;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .mini-stat {
+            background: white;
+            padding: 1.2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .mini-stat-number {
+            font-size: 1.8rem;
+            color: #7C3AED;
+            font-weight: bold;
+        }
+        
+        .mini-stat-label {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .filter-bar {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .filter-bar select,
+        .filter-bar input {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .filter-bar input {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .users-table {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: #F3F4F6;
+            padding: 1rem;
+            text-align: left;
+            font-weight: bold;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        tr:hover {
+            background: #F9FAFB;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7C3AED, #6D28D9);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-name {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .user-email {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .role-badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .role-admin {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+        
+        .role-creator {
+            background: #E0E7FF;
+            color: #4C1D95;
+        }
+        
+        .role-customer {
+            background: #DCFCE7;
+            color: #166534;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .status-active {
+            background: #DCFCE7;
+            color: #166534;
+        }
+        
+        .status-inactive {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn-view {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+        
+        .btn-suspend {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+        
+        .btn-activate {
+            background: #DCFCE7;
+            color: #166534;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #666;
+        }
+        
+        footer {
+            background: #1F2937;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">💎 ProAssets Admin</div>
+            <ul>
+                <li><a href="/admin">Dashboard</a></li>
+                <li><a href="/admin/products">Products</a></li>
+                <li><a href="/admin/users">Users</a></li>
+                <li><a href="/admin/withdrawals">Withdrawals</a></li>
+            </ul>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>👥 User Management</h1>
+            <p style="color: #666;">View and manage all platform users</p>
+        </div>
+
+        <!-- Mini Stats -->
+        <div class="stats-row">
+            <div class="mini-stat">
+                <div class="mini-stat-number">{{ users|length }}</div>
+                <div class="mini-stat-label">Total Users</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-number">{{ users|selectattr('role', 'equalto', 'creator')|list|length }}</div>
+                <div class="mini-stat-label">Creators</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-number">{{ users|selectattr('role', 'equalto', 'customer')|list|length }}</div>
+                <div class="mini-stat-label">Customers</div>
+            </div>
+            <div class="mini-stat">
+                <div class="mini-stat-number">{{ users|selectattr('is_active', 'equalto', 1)|list|length }}</div>
+                <div class="mini-stat-label">Active</div>
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <input type="text" id="searchInput" placeholder="🔍 Search by name or email..." onkeyup="searchUsers()">
+            <select id="roleFilter" onchange="filterUsers()">
+                <option value="">All Roles</option>
+                <option value="customer">Customers</option>
+                <option value="creator">Creators</option>
+                <option value="admin">Admins</option>
+            </select>
+            <select id="statusFilter" onchange="filterUsers()">
+                <option value="">All Status</option>
+                <option value="1">Active</option>
+                <option value="0">Inactive</option>
+            </select>
+        </div>
+
+        <!-- Users Table -->
+        {% if users %}
+        <div class="users-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Joined</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr data-role="{{ user.role }}" data-active="{{ user.is_active }}">
+                        <td>
+                            <div class="user-info">
+                                <div class="user-avatar">
+                                    {{ user.username[0]|upper }}
+                                </div>
+                                <div>
+                                    <div class="user-name">{{ user.first_name or user.username }} {{ user.last_name or '' }}</div>
+                                    <div class="user-email">{{ user.email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="role-badge role-{{ user.role }}">
+                                {{ user.role }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="status-badge status-{{ 'active' if user.is_active else 'inactive' }}">
+                                {{ 'Active' if user.is_active else 'Inactive' }}
+                            </span>
+                        </td>
+                        <td>{{ user.created_at }}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn btn-view" onclick="viewUser({{ user.id }})">
+                                    View
+                                </button>
+                                {% if user.role != 'admin' %}
+                                {% if user.is_active %}
+                                <button class="action-btn btn-suspend" onclick="suspendUser({{ user.id }})">
+                                    Suspend
+                                </button>
+                                {% else %}
+                                <button class="action-btn btn-activate" onclick="activateUser({{ user.id }})">
+                                    Activate
+                                </button>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h2>No Users Found</h2>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 ProAssets. All rights reserved. | Admin Panel</p>
+    </footer>
+
+    <script>
+        function searchUsers() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            document.querySelectorAll('table tbody tr').forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        function filterUsers() {
+            const role = document.getElementById('roleFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            
+            document.querySelectorAll('table tbody tr').forEach(row => {
+                const rowRole = row.dataset.role;
+                const rowStatus = row.dataset.active;
+                
+                let showRow = true;
+                
+                if (role && rowRole !== role) showRow = false;
+                if (status && rowStatus !== status) showRow = false;
+                
+                row.style.display = showRow ? '' : 'none';
+            });
+        }
+
+        function viewUser(userId) {
+            alert('👤 User details feature coming soon! User ID: ' + userId);
+        }
+
+        function suspendUser(userId) {
+            if (confirm('Suspend this user? They will not be able to log in.')) {
+                alert('⏸️ User suspended! (Feature coming soon)');
+            }
+        }
+
+        function activateUser(userId) {
+            if (confirm('Activate this user?')) {
+                alert('✅ User activated! (Feature coming soon)');
+            }
+        }
+    </script>
+</body>
+</html>

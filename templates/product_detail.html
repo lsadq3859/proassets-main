@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+            color: white;
+            padding: 1rem 0;
+        }
+        
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .breadcrumb {
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+        
+        .breadcrumb a {
+            color: #7C3AED;
+            text-decoration: none;
+        }
+        
+        .product-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 3rem;
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #7C3AED, #6D28D9);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 5rem;
+        }
+        
+        .product-details h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .product-meta {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .meta-label {
+            font-size: 0.85rem;
+            color: #666;
+            text-transform: uppercase;
+        }
+        
+        .meta-value {
+            font-size: 1.2rem;
+            color: #7C3AED;
+            font-weight: bold;
+        }
+        
+        .rating {
+            color: #FBBF24;
+            font-size: 1.1rem;
+        }
+        
+        .price-section {
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+            padding: 1.5rem 0;
+            margin: 1.5rem 0;
+        }
+        
+        .price {
+            font-size: 2rem;
+            color: #7C3AED;
+            font-weight: bold;
+        }
+        
+        .description {
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+        
+        .product-type {
+            display: inline-block;
+            background: #E0E7FF;
+            color: #7C3AED;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .creator-info {
+            background: #F3F4F6;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .creator-info p {
+            margin-bottom: 0.5rem;
+        }
+        
+        .creator-name {
+            font-weight: bold;
+            color: #7C3AED;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #7C3AED;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #6D28D9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #7C3AED;
+            border: 2px solid #7C3AED;
+        }
+        
+        .btn-secondary:hover {
+            background: #E0E7FF;
+        }
+        
+        .reviews-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 3rem;
+        }
+        
+        .reviews-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+        
+        .review {
+            border-bottom: 1px solid #eee;
+            padding: 1.5rem 0;
+        }
+        
+        .review:last-child {
+            border-bottom: none;
+        }
+        
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .reviewer-name {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .review-date {
+            font-size: 0.85rem;
+            color: #999;
+        }
+        
+        .review-rating {
+            color: #FBBF24;
+            margin-bottom: 0.5rem;
+        }
+        
+        .review-text {
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .related-products {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .related-products h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+        
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .related-card {
+            background: #F9FAFB;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        
+        .related-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .related-image {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(135deg, #7C3AED, #6D28D9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+        }
+        
+        .related-info {
+            padding: 1rem;
+        }
+        
+        .related-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .related-price {
+            color: #7C3AED;
+            font-weight: bold;
+        }
+        
+        footer {
+            background: #1F2937;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        .alert-success {
+            background: #DCFCE7;
+            color: #16A34A;
+            border: 1px solid #86EFAC;
+        }
+        
+        .alert-error {
+            background: #FEE2E2;
+            color: #DC2626;
+            border: 1px solid #FECACA;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">💎 ProAssets</div>
+            <div>
+                <a href="/">Home</a>
+                <a href="/products">Products</a>
+                <a href="/cart">🛒 Cart</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="/">Home</a> / <a href="/products">Products</a> / <span>{{ product.title_en }}</span>
+        </div>
+        
+        <!-- Alert Messages -->
+        <div class="alert alert-success" id="successAlert"></div>
+        <div class="alert alert-error" id="errorAlert"></div>
+        
+        <!-- Product Section -->
+        <div class="product-section">
+            <div class="product-image">📦</div>
+            
+            <div class="product-details">
+                <span class="product-type">{{ product.product_type }}</span>
+                <h1>{{ product.title_en }}</h1>
+                
+                <div class="product-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Category</span>
+                        <span class="meta-value">{{ product.name_en }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Rating</span>
+                        <span class="rating">⭐ {{ product.rating or 'Not rated' }}</span>
+                    </div>
+                </div>
+                
+                <div class="creator-info">
+                    <p><strong>Creator:</strong></p>
+                    <p class="creator-name">{{ product.first_name }} {{ product.last_name }}</p>
+                    <p>@{{ product.username }}</p>
+                </div>
+                
+                <div class="description">
+                    <h3>Description</h3>
+                    <p>{{ product.description_en }}</p>
+                </div>
+                
+                <div class="price-section">
+                    <div class="price">${{ product.price }}</div>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn btn-primary" onclick="addToCart({{ product.id }})">
+                        Add to Cart 🛒
+                    </button>
+                    <button class="btn btn-secondary" onclick="buyNow({{ product.id }})">
+                        Buy Now
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Reviews Section -->
+        {% if reviews %}
+        <div class="reviews-section">
+            <h2>Customer Reviews ({{ reviews|length }})</h2>
+            {% for review in reviews %}
+            <div class="review">
+                <div class="review-header">
+                    <span class="reviewer-name">{{ review.username }}</span>
+                    <span class="review-date">{{ review.created_at }}</span>
+                </div>
+                <div class="review-rating">
+                    {% for i in range(review.rating) %}⭐{% endfor %}
+                </div>
+                <div class="review-text">{{ review.comment }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <!-- Related Products -->
+        {% if other_products %}
+        <div class="related-products">
+            <h2>More from this Creator</h2>
+            <div class="related-grid">
+                {% for prod in other_products %}
+                <div class="related-card">
+                    <div class="related-image">📦</div>
+                    <div class="related-info">
+                        <div class="related-title">{{ prod.title_en }}</div>
+                        <div class="related-price">${{ prod.price }}</div>
+                        <a href="/product/{{ prod.slug }}" style="color: #7C3AED; text-decoration: none;">View →</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 ProAssets. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function showAlert(message, type) {
+            const alert = type === 'success' ? document.getElementById('successAlert') : document.getElementById('errorAlert');
+            alert.textContent = message;
+            alert.style.display = 'block';
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+        
+        async function addToCart(productId) {
+            try {
+                const response = await fetch(`/cart/add/${productId}`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showAlert('Product added to cart! 🎉', 'success');
+                } else {
+                    showAlert(data.message, 'error');
+                }
+            } catch (error) {
+                showAlert('Error adding to cart', 'error');
+            }
+        }
+        
+        function buyNow(productId) {
+            addToCart(productId);
+            setTimeout(() => {
+                window.location.href = '/checkout';
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

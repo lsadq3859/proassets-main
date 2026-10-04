@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+            color: white;
+            padding: 1rem 0;
+        }
+        
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .user-greeting h1 {
+            color: #7C3AED;
+            margin-bottom: 0.5rem;
+        }
+        
+        .user-greeting p {
+            color: #666;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn {
+            padding: 0.8rem 1.5rem;
+            background: #7C3AED;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #6D28D9;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #7C3AED;
+            border: 2px solid #7C3AED;
+        }
+        
+        .btn-secondary:hover {
+            background: #E0E7FF;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            color: #7C3AED;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .recent-purchases {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .recent-purchases h2 {
+            color: #7C3AED;
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: #F3F4F6;
+            padding: 1rem;
+            text-align: left;
+            font-weight: bold;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        tr:hover {
+            background: #F9FAFB;
+        }
+        
+        .product-name {
+            color: #7C3AED;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .product-name:hover {
+            text-decoration: underline;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        
+        .status-completed {
+            background: #DCFCE7;
+            color: #166534;
+        }
+        
+        .status-pending {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+        
+        .status-failed {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #666;
+        }
+        
+        .empty-state h3 {
+            color: #7C3AED;
+            margin-bottom: 1rem;
+        }
+        
+        .empty-state p {
+            margin-bottom: 1.5rem;
+        }
+        
+        footer {
+            background: #1F2937;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+        
+        .sidebar {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .quick-link {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .quick-link:hover {
+            transform: translateY(-5px);
+        }
+        
+        .quick-link a {
+            display: block;
+            text-decoration: none;
+            color: #7C3AED;
+            font-weight: bold;
+        }
+        
+        .quick-link-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">💎 ProAssets</div>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/products">Shop</a></li>
+                <li><a href="/library">My Library</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+            </ul>
+            <ul>
+                <li><a href="/account">Account</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Welcome Section -->
+        <div class="dashboard-header">
+            <div class="user-greeting">
+                <h1>Welcome back, {{ user.first_name or user.username }}! 👋</h1>
+                <p>Manage your purchases and account settings</p>
+            </div>
+            <div class="header-actions">
+                <a href="/products" class="btn">Browse More</a>
+                <a href="/account" class="btn btn-secondary">Settings</a>
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="sidebar">
+            <div class="quick-link">
+                <div class="quick-link-icon">📚</div>
+                <a href="/library">My Library</a>
+                <p style="font-size: 0.85rem; color: #666; margin-top: 0.5rem;">Access all your purchases</p>
+            </div>
+            <div class="quick-link">
+                <div class="quick-link-icon">🛒</div>
+                <a href="/products">Continue Shopping</a>
+                <p style="font-size: 0.85rem; color: #666; margin-top: 0.5rem;">Find more products</p>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="dashboard-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ purchases|length }}</div>
+                <div class="stat-label">Total Purchases</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">${{ purchases|map(attribute='price')|sum }}</div>
+                <div class="stat-label">Total Spent</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ purchases|selectattr('payment_status', 'equalto', 'completed')|list|length }}</div>
+                <div class="stat-label">Completed Orders</div>
+            </div>
+        </div>
+
+        <!-- Recent Purchases -->
+        <div class="recent-purchases">
+            <h2>Recent Purchases</h2>
+            
+            {% if purchases %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for purchase in purchases %}
+                    <tr>
+                        <td>
+                            <a href="/product/{{ purchase.slug }}" class="product-name">
+                                {{ purchase.title_en }}
+                            </a>
+                        </td>
+                        <td>${{ purchase.price }}</td>
+                        <td>{{ purchase.created_at }}</td>
+                        <td>
+                            <span class="status-badge status-{{ purchase.payment_status }}">
+                                {{ purchase.payment_status }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="/product/{{ purchase.slug }}" style="color: #7C3AED;">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <h3>No Purchases Yet</h3>
+                <p>Start exploring our amazing products and make your first purchase!</p>
+                <a href="/products" class="btn">Browse Products</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 ProAssets. All rights reserved.</p>
+    </footer>
+</body>
+</html>
