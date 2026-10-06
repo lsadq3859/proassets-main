@@ -272,7 +272,7 @@ def create_app(config_name=None):
             search_param = f'%{search}%'
             params.extend([search_param, search_param, search_param])
         
-        total = db.execute(f'SELECT COUNT(*) FROM ({query})').fetchone()[0]
+        total = db.execute(f'SELECT COUNT(*) FROM ({query})', params).fetchone()[0]
         
         query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?'
         params.extend([per_page, (page - 1) * per_page])
