@@ -1,59 +1,22 @@
-# ProAssets 💎
 
-**Global Digital Assets Marketplace**
 
-A modern, multilingual platform for buying and selling digital products: books, templates, graphics, code snippets, and more.
+## إنشاء أول مدير بأمان على Render
 
-منصة عالمية حديثة لبيع وشراء الأصول الرقمية: كتب، قوالس، تصاميم، أكواد برمجية، وأكثر.
+لا تُنشئ حساب المدير بكلمة مرور ثابتة داخل الكود. استخدم سكربت `bootstrap_admin.py` مع متغيرات سرية مؤقتة في Render:
 
----
+1. من Render افتح خدمة `proassets-main` ثم **Environment**.
+2. أضف المتغيرات التالية بقيم تختارها أنت:
+   - `BOOTSTRAP_ADMIN_USERNAME` — اسم المدير، من 3 إلى 50 حرفًا.
+   - `BOOTSTRAP_ADMIN_EMAIL` — بريد المدير.
+   - `BOOTSTRAP_ADMIN_PASSWORD` — كلمة مرور قوية من 12 حرفًا على الأقل.
+3. احفظ التغييرات وانتظر إعادة التشغيل.
+4. افتح **Shell** للخدمة وشغّل:
 
-## ✨ Features / المميزات
-
-### For Customers / للعملاء
-- 🔍 Advanced search and filtering
-- 💳 Secure checkout and payments
-- 📚 Personal library for purchased products
-- ⭐ Product reviews and ratings
-- 🌍 Multi-language support (English, العربية)
-- 💰 Multi-currency support (USD, EUR, etc.)
-
-### For Creators / للمنشئين
-- 📤 Easy product upload
-- 📊 Sales analytics and statistics
-- 💰 Earnings dashboard
-- 💸 Multiple withdrawal methods
-- 📈 Featured product promotion
-
-### For Admins / للإدارة
-- ✅ Product approval system
-- 👥 User management
-- 📋 Sales reports
-- 💳 Payment verification
-- ⚙️ Platform settings
-
----
-
-## 🛠️ Tech Stack / التقنيات المستخدمة
-
-- **Backend:** Flask 3.1 (Python)
-- **Database:** SQLite (Development) / PostgreSQL (Production)
-- **Frontend:** Jinja2, HTML5, CSS3, JavaScript
-- **Hosting:** PythonAnywhere (Free)
-- **Storage:** Local (Development) / Cloudflare R2 (Production)
-- **Payments:** Stripe, PayPal (Future)
-
----
-
-## 📦 Installation / التثبيت
-
-### Prerequisites / المتطلبات
-- Python 3.8+
-- pip (Python package manager)
-
-### Local Development / التطوير محلياً
-
-1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/proassets.git
-cd proassets
+python bootstrap_admin.py
+```
+
+5. إذا ظهرت رسالة `Admin created successfully`، سجّل الدخول من `/login` ثم افتح `/admin`.
+6. بعد نجاح الدخول، احذف متغيرات `BOOTSTRAP_ADMIN_*` من Render ثم احفظ الخدمة.
+
+السكربت آمن وقابل لإعادة التشغيل: إذا وجد مديرًا مسبقًا لا يغير أي حساب أو كلمة مرور، وإذا تعارض الاسم أو البريد مع حساب عادي يتوقف دون رفع صلاحياته.
