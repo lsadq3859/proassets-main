@@ -30,7 +30,8 @@ def required(name: str) -> str:
     return value
 
 
-def main() -> int:
+def bootstrap_admin() -> int:
+    """Create the first admin when bootstrap variables are explicitly set."""
     username = required("BOOTSTRAP_ADMIN_USERNAME")
     email = required("BOOTSTRAP_ADMIN_EMAIL").lower()
     password = required("BOOTSTRAP_ADMIN_PASSWORD")
@@ -46,8 +47,10 @@ def main() -> int:
     db = sqlite3.connect(DB_PATH)
     db.row_factory = sqlite3.Row
     try:
-        # Do not change an existing admin or silently elevate an ordinary user.
-        if db.execute("SELECT 1 FROM users WHERE role = 'admin' LIMIT 1").fetchone():
+        # Never change an existing admin or silently elevate another account.
+        if db.execute(
+            "SELECT 1 FROM users WHERE role = 'admin' LIMIT 1"
+        ).fetchone():
             print("An admin already exists; no changes made.")
             return 0
 
@@ -75,9 +78,13 @@ def main() -> int:
         db.close()
 
 
+def main() -> int:
+    return bootstrap_admin()
+
+
 if __name__ == "__main__":
     try:
-        raise SystemExit(main())
+        raise SystemExit(bootstrap_admin())
     except sqlite3.Error as exc:
         print(f"Database error: {exc}", file=sys.stderr)
         raise SystemExit(1)
