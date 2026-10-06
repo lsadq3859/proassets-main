@@ -1,11 +1,9 @@
 import os
 
-from bootstrap_admin import bootstrap_admin
 from app import create_app
 
+app = create_app(os.getenv("FLASK_ENV", "development"))
 
-# إنشاء أول مدير تلقائيًا إذا كانت متغيرات BOOTSTRAP_ADMIN_ موجودة.
-# العملية آمنة: إذا كان هناك مدير مسبقًا فلن يتم تغيير أي شيء.
 if all(
     os.getenv(name, "").strip()
     for name in (
@@ -14,11 +12,8 @@ if all(
         "BOOTSTRAP_ADMIN_PASSWORD",
     )
 ):
+    from bootstrap_admin import bootstrap_admin
     bootstrap_admin()
-
-
-app = create_app(os.getenv("FLASK_ENV", "development"))
-
 
 if __name__ == "__main__":
     app.run(
