@@ -50,6 +50,12 @@ class Config:
     DEBUG = False
     TESTING = False
 
+    # بيانات التواصل والدفع اليدوي — تُضبط كأسرار/متغيرات بيئة في Render
+    CONTACT_PHONE = os.environ.get('CONTACT_PHONE', '')
+    CONTACT_EMAIL = os.environ.get('CONTACT_EMAIL', '')
+    PAYMENT_MODE = os.environ.get('PAYMENT_MODE', 'manual')
+    AD_IMAGE_URL = os.environ.get('AD_IMAGE_URL', '/static/images/dhfa-banner.png')
+
 
 class DevelopmentConfig(Config):
     """إعدادات التطوير (على جهازك)"""

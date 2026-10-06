@@ -76,6 +76,15 @@ def create_app(config_name=None):
 
     if config_name == 'production':
         config[config_name].validate()
+
+    @app.context_processor
+    def site_contact_context():
+        return {
+            'contact_phone': app.config.get('CONTACT_PHONE', ''),
+            'contact_email': app.config.get('CONTACT_EMAIL', ''),
+            'payment_mode': app.config.get('PAYMENT_MODE', 'manual'),
+            'ad_image_url': app.config.get('AD_IMAGE_URL', '/static/images/dhfa-banner.png'),
+        }
     
     # إنشاء مجلدات مهمة
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -88,11 +97,7 @@ def create_app(config_name=None):
     @app.before_request
     def block_payments():
         """إيقاف مسارات الدفع والسحب حتى يتم ربطها بشكل آمن"""
-        blocked_endpoints = {
-            "checkout",
-            "creator_withdraw",
-            "process_withdrawal",
-        }
+        blocked_endpoints = {"creator_withdraw", "process_withdrawal"}
         
         if request.endpoint in blocked_endpoints and request.method == 'POST':
             return jsonify({
@@ -389,14 +394,45 @@ def create_app(config_name=None):
     @app.route('/checkout', methods=['GET', 'POST'])
     @login_required
     def checkout():
-        """صفحة الدفع"""
+        """إنشاء طلب شراء يدوي معلّق دون تحصيل أموال آلي."""
         if request.method == 'POST':
+            cart_items = session.get('cart', [])
+            if not cart_items:
+                return jsonify({'status': 'error', 'message': 'Your cart is empty'}), 400
+
+            db = get_db()
+            created = 0
+            try:
+                for item in cart_items:
+                    product = db.execute(
+                        'SELECT id, price, currency FROM products WHERE id = ? AND status = "published"',
+                        (item['id'],)
+                    ).fetchone()
+                    if product is None:
+                        continue
+                    db.execute(
+                        '''INSERT INTO orders
+                           (customer_id, product_id, price, currency, payment_method,
+                            payment_status, platform_commission, creator_earnings)
+                           VALUES (?, ?, ?, ?, 'manual_contact', 'pending', ?, ?)''',
+                        (session['user_id'], product['id'], product['price'], product['currency'],
+                         product['price'] * config[config_name].PLATFORM_COMMISSION,
+                         product['price'] * config[config_name].CREATOR_SHARE)
+                    )
+                    created += 1
+                db.commit()
+            finally:
+                db.close()
+
+            session['cart'] = []
+            session.modified = True
             return jsonify({
-                'status': 'error',
-                'message': 'Checkout is disabled during development'
-            }), 503
-        
-        return render_template('checkout_disabled.html', title='Checkout')
+                'status': 'success',
+                'message': 'Purchase request submitted. Contact support to complete manual payment.',
+                'orders_created': created,
+            }), 201
+
+        return render_template('checkout_disabled.html', title='Manual Checkout')
 
     @app.route('/download/<int:product_id>')
     @login_required

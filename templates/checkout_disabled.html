@@ -1,1 +1,54 @@
-<!doctype html><html lang="en" dir="ltr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{{ title }}</title><link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"></head><body><main class="container"><div class="card text-center"><h1>Checkout is temporarily unavailable</h1><p>Online payments are not enabled in this development build. No card information is collected or stored.</p><a class="btn" href="/products">Return to products</a></div></main></body></html>
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .manual-checkout { max-width: 680px; margin: 4rem auto; padding: 2rem; background: #fff; border-radius: 14px; box-shadow: 0 2px 14px rgba(0,0,0,.08); text-align: center; }
+        .contact-icons { display: flex; justify-content: center; gap: 1rem; margin: 1.5rem 0; }
+        .contact-icons a { display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 50%; background: #f0e8ff; color: #6d28d9; text-decoration: none; font-size: 1.5rem; }
+        .checkout-actions { display: flex; gap: .8rem; justify-content: center; flex-wrap: wrap; }
+        .checkout-actions button, .checkout-actions a { border: 0; cursor: pointer; padding: .8rem 1.2rem; border-radius: 7px; text-decoration: none; }
+        .primary { background: #7c3aed; color: #fff; }
+        .secondary { background: #eee; color: #333; }
+        #result { margin-top: 1rem; font-weight: 600; }
+    </style>
+</head>
+<body>
+<main class="manual-checkout">
+    <h1>طلب شراء يدوي</h1>
+    <p>لا يتم تحصيل أي مبلغ تلقائيًا. اضغط إرسال الطلب لإنشاء طلب معلّق، ثم تواصل معنا عبر الأيقونات لإتمام الدفع يدويًا.</p>
+    <div class="contact-icons" aria-label="خيارات التواصل">
+        {% if contact_phone %}<a href="tel:{{ contact_phone }}" title="اتصال" aria-label="اتصال">☎</a>{% endif %}
+        {% if contact_phone %}<a href="https://wa.me/{{ contact_phone|replace('+','')|replace(' ','')|replace('-','')|replace('(','')|replace(')','') }}" target="_blank" rel="noopener" title="واتساب" aria-label="واتساب">◉</a>{% endif %}
+        {% if contact_email %}<a href="mailto:{{ contact_email }}" title="بريد إلكتروني" aria-label="بريد إلكتروني">✉</a>{% endif %}
+    </div>
+    <div class="checkout-actions">
+        <button class="primary" id="submitOrder">إرسال طلب الشراء</button>
+        <a class="secondary" href="/cart">العودة إلى السلة</a>
+    </div>
+    <div id="result" role="status"></div>
+</main>
+<script>
+document.getElementById('submitOrder').addEventListener('click', async () => {
+    const result = document.getElementById('result');
+    const button = document.getElementById('submitOrder');
+    button.disabled = true;
+    try {
+        const response = await fetch('/checkout', {method: 'POST', headers: {'Content-Type': 'application/json'}});
+        const data = await response.json();
+        result.textContent = data.message || 'تم إرسال الطلب';
+        result.style.color = response.ok ? '#15803d' : '#b91c1c';
+        if (response.ok) button.textContent = 'تم إرسال الطلب';
+        else button.disabled = false;
+    } catch (error) {
+        result.textContent = 'تعذر إرسال الطلب. حاول مرة أخرى.';
+        result.style.color = '#b91c1c';
+        button.disabled = false;
+    }
+});
+</script>
+</body>
+</html>

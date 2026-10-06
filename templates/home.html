@@ -176,6 +176,12 @@
         .btn-secondary:hover {
             background: #f0f0f0;
         }
+
+        .site-ad { max-width: 1200px; margin: 2rem auto 0; padding: 0 2rem; }
+        .site-ad img { display: block; width: 100%; height: auto; border-radius: 12px; box-shadow: 0 3px 14px rgba(0,0,0,.12); }
+        .contact-icons { display: flex; justify-content: center; gap: .9rem; margin-top: 1rem; }
+        .contact-icons a { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; background: #374151; color: #fff; text-decoration: none; font-size: 1.25rem; }
+        .contact-icons a:hover { background: #7C3AED; }
     </style>
 </head>
 <body>
@@ -201,6 +207,10 @@
         <h1>Welcome to ProAssets 💎</h1>
         <p>Global Marketplace for Digital Products</p>
         <a href="/products" class="btn">Explore Now</a>
+    </section>
+
+    <section class="site-ad" aria-label="إعلان">
+        <img src="{{ ad_image_url }}" alt="إعلان منصة دهفة للتعلم والمحتوى الرقمي">
     </section>
 
     <!-- Featured Products -->
@@ -242,6 +252,11 @@
     <footer>
         <p>&copy; 2024 ProAssets. All rights reserved.</p>
         <p><a href="/privacy" style="color: #FBBF24;">Privacy</a> | <a href="/terms" style="color: #FBBF24;">Terms</a></p>
+        <div class="contact-icons" aria-label="خيارات التواصل">
+            {% if contact_phone %}<a href="tel:{{ contact_phone }}" title="اتصال" aria-label="اتصال">☎</a>{% endif %}
+            {% if contact_phone %}<a href="https://wa.me/{{ contact_phone|replace('+','')|replace(' ','')|replace('-','')|replace('(','')|replace(')','') }}" target="_blank" rel="noopener" title="واتساب" aria-label="واتساب">◉</a>{% endif %}
+            {% if contact_email %}<a href="mailto:{{ contact_email }}" title="بريد إلكتروني" aria-label="بريد إلكتروني">✉</a>{% endif %}
+        </div>
     </footer>
 </body>
 </html>
