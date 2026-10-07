@@ -1,8 +1,25 @@
 import os
 
+from dotenv import load_dotenv
+
+# Load local .env before importing config.py/app.py. Render's dashboard variables
+# take precedence because python-dotenv does not override existing environment.
+load_dotenv()
+
 from app import create_app
 
-app = create_app(os.getenv("FLASK_ENV", "development"))
+
+def runtime_environment():
+    configured = (os.getenv("APP_ENV") or os.getenv("FLASK_ENV") or "").strip().lower()
+    if configured:
+        return configured
+    # Render supplies PORT; use production settings by default for deployed workers.
+    if os.getenv("RENDER", "").strip().lower() == "true" or os.getenv("PORT"):
+        return "production"
+    return "development"
+
+
+app = create_app(runtime_environment())
 
 if all(
     os.getenv(name, "").strip()

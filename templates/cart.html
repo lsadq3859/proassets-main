@@ -1,31 +1,34 @@
 <!doctype html>
 <html lang="en" dir="ltr">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ title }}</title>
   <style>
-    body{font-family:system-ui,sans-serif;background:#f8f9fa;color:#1f2937;margin:0}.wrap{max-width:1000px;margin:0 auto;padding:2rem 1rem}nav{background:#6d28d9;padding:1rem}nav a{color:#fff;margin-right:1rem;text-decoration:none}.card{background:#fff;padding:1rem;margin:.75rem 0;border-radius:10px;box-shadow:0 2px 8px #0001;display:flex;justify-content:space-between;align-items:center}.price{color:#6d28d9;font-weight:700}.remove{background:#fee2e2;color:#b91c1c;border:0;padding:.5rem .8rem;border-radius:6px;cursor:pointer}.summary{background:#fff;padding:1.25rem;border-radius:10px;margin-top:1.5rem}.btn{display:inline-block;background:#6d28d9;color:#fff;padding:.75rem 1rem;border-radius:6px;text-decoration:none;border:0;cursor:pointer}.muted{color:#6b7280}
+    *{box-sizing:border-box}body{font-family:system-ui,sans-serif;background:#f8f9fa;color:#1f2937;margin:0}.wrap{max-width:1000px;margin:0 auto;padding:2rem 1rem}nav{background:#6d28d9;padding:1rem;display:flex;gap:1rem;flex-wrap:wrap}nav a{color:#fff;text-decoration:none}.card{background:#fff;padding:1rem;margin:.75rem 0;border-radius:10px;box-shadow:0 2px 8px #0001;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}.price{color:#6d28d9;font-weight:700}.remove{background:#fee2e2;color:#b91c1c;border:0;padding:.5rem .8rem;border-radius:6px;cursor:pointer}.summary{background:#fff;padding:1.25rem;border-radius:10px;margin-top:1.5rem}.btn{display:inline-block;background:#6d28d9;color:#fff;padding:.75rem 1rem;border-radius:6px;text-decoration:none;border:0;cursor:pointer}.muted{color:#6b7280}.card h2{margin:.2rem 0}@media(max-width:520px){.wrap{padding:1rem}.card>*{max-width:100%}.remove{width:100%}}
   </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/brand.css') }}">
 </head>
 <body>
-<nav><a href="/">ProAssets</a><a href="/products">Products</a><a href="/cart">Cart</a><a href="/login">Login</a></nav>
+    <script src="{{ url_for('static', filename='js/site-i18n.js') }}" defer></script>
+<nav><span class="cart-brand">{% include 'partials/brand_logo.html' %}</span><a href="/products">Products</a><a href="/cart">Cart</a><a href="/login">Login</a></nav>
 <main class="wrap">
   <h1>Shopping Cart</h1>
   {% if products %}
     {% for product in products %}
       <article class="card" id="item-{{ product.id }}">
-        <div><h2>{{ product.title_en }}</h2><p class="muted">{{ product.product_type }}</p></div>
-        <span class="price">${{ '%.2f'|format(product.price) }}</span>
+        <div><h2 data-lang-en="{{ product.title_en }}" data-lang-ar="{{ product.title_ar or product.title_en }}">{{ product.title_en }}</h2><p class="muted">{{ product.product_type }}</p></div>
+        <span class="price"><bdi dir="ltr">{{ product.currency or 'USD' }} {{ '%.2f'|format(product.price) }}</bdi></span>
         <button class="remove" onclick="removeFromCart({{ product.id }})">Remove</button>
       </article>
     {% endfor %}
-    <section class="summary"><strong>Total: ${{ '%.2f'|format(total) }}</strong><br><br><a class="btn" href="/checkout">Continue to checkout</a></section>
+    <section class="summary"><h2>Total</h2>{% for currency,total in totals_by_currency.items() %}<p><strong>{{ currency }} {{ '%.2f'|format(total) }}</strong></p>{% endfor %}<p class="muted">Each currency is totaled separately; no currency conversion is performed.</p><a class="btn" href="{{ url_for('checkout') }}">Continue to checkout</a></section>
   {% else %}
     <section class="card"><div><h2>Your cart is empty</h2><p class="muted">Browse the marketplace to find digital products.</p><a class="btn" href="/products">Browse products</a></div></section>
   {% endif %}
 </main>
 <script>
-async function removeFromCart(id){const r=await fetch('/cart/remove/'+id,{method:'POST'});if(r.ok) location.reload(); else alert('Unable to remove item');}
+const csrfToken=document.querySelector('meta[name="csrf-token"]').content; async function removeFromCart(id){const r=await fetch('/cart/remove/'+id,{method:'POST',headers:{'X-CSRF-Token':csrfToken}});if(r.ok) location.reload(); else alert('Unable to remove item');}
 </script>
 </body>
 </html>

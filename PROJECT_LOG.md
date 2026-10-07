@@ -1,144 +1,41 @@
-# ProAssets 💎 - Project Log
+# ProAssets — Project Notes
 
-## 📋 Project Information
-- **Name:** ProAssets 💎
-- **Description:** Global Digital Assets Marketplace
-- **Version:** 1.0.0 (Alpha)
-- **Status:** Development Complete - Ready for Testing
-- **Platform:** PythonAnywhere (Free)
-- **Database:** SQLite (Development)
-- **Languages:** English + العربية (Arabic)
-- **Commission:** 20% Platform, 80% Creator
+## Current state
+- **Version:** 1.0.0 Alpha
+- **Deployment target:** Render
+- **Backend:** Flask + direct SQLite (`DATABASE_PATH`); unused SQLAlchemy/PAYMENT_PROVIDER settings have been removed from the active code.
+- **Uploads:** stored in private `UPLOAD_FOLDER`, not `static/`; production must keep this and the SQLite file on persistent storage.
+- **Languages:** Arabic/English switch persists in browser local storage, sets RTL/LTR, and covers the home screen plus shared legacy screens. Product/category fields prefer Arabic fields where present. Native-speaker review remains necessary.
+- **Marketplace split:** current logic records 20% platform commission / 80% creator share for paid orders. This is ledger accounting, not a payout.
+- **Payments:** paid requests are manual only. No card/PayPal collection or automatic creator disbursement is enabled.
 
----
+## Implemented flows and safeguards
+- Passwords use Werkzeug hashes; public registration allows only `customer` and `creator`; creator creation and wallet setup share a transaction.
+- Production startup requires a unique `SECRET_KEY` of at least 32 characters, absolute database/upload paths, and a configured support contact. Mount persistent storage on Render and retain/backup it across deploys.
+- Protected routes re-check active state, auth version, and role in SQLite. Password changes and anonymized account deletion invalidate older sessions. Administrators cannot self-delete; creator listings/payout history and pending purchase requests are guarded during deletion.
+- Every POST/PUT/PATCH/DELETE requires a session-bound CSRF token. Responses set `nosniff`, same-origin framing, referrer and permissions policies; HSTS is enabled for the production configuration.
+- Checkout creates pending requests for paid products and fulfills free products immediately. Paid POST requests are blocked server-side when no support phone/email is configured, not only by disabling the UI button. Admin confirmation is transactional and idempotent, verifies order/wallet currency compatibility, records creator earnings, updates sales, and grants customer-library access only after confirmation. Rejections do not grant access.
+- Product files have randomized stored names and remain private; download URLs require library entitlement. Avatar uploads are restricted to small raster images with signature and dimension checks. Account avatar writes have a per-request body limit.
+- Creator listing edits return published/rejected products to review. Admin review only transitions pending listings. Product deletion is blocked when financial, library, or review history exists.
+- Public contact submissions are validated and stored in an admin inbox with pagination and close-only state changes. The app does not send automatic email replies/notifications.
+- Withdrawal routes are deliberately blocked and the admin withdrawal screen is read-only. Currency totals remain grouped; no exchange-rate conversion is claimed.
+- Privacy/terms pages describe the current manual-payment alpha and flag missing operator/legal details for pre-launch review.
 
-## ✅ Completed Milestones
+## Verification (local)
+- `./.venv/bin/python -m unittest discover -s tests -v` — **18 tests pass**.
+- `node --check static/js/home.js`, `node --check static/js/site-i18n.js`, and `node --check static/js/main.js` — pass.
+- `./.venv/bin/python -m compileall -q app.py config.py run.py bootstrap_admin.py migrations.py tests` — pass.
+- `git diff --check` — clean at the latest recorded check.
+- Integration tests cover manual order fulfillment/rejection and idempotency, currency safeguards, CSRF, registration, uploads/private download authorization, account/password/preferences/avatar/deletion flows, support inbox pagination, moderation transitions, withdrawal shutdown, security headers, and representative rendered pages/templates.
 
-### Phase 1: Project Setup ✓
-- [x] GitHub Repository Created
-- [x] PythonAnywhere Account Setup
-- [x] Project Structure Defined
-- [x] Documentation Started
+## Open work / release risks
+- **Not pushed or deployed:** these changes are local to the workspace. GitHub/Render credentials and service settings were not modified in this session.
+- **Public Git history:** review historical commits for credentials. Removing a secret from the working tree does not remove it from history; rotate any credentials that were ever live.
+- **Render operations:** attach a persistent disk, set `APP_ENV=production`, `SECRET_KEY`, absolute paths and monitored support contact; verify backups and restore procedures before launch.
+- **Manual payment operations:** support contact must be monitored and administrators must independently verify every payment before confirming an order. No payout processing exists; ledger balances are not paid funds.
+- **Remaining product gaps:** login/contact rate limiting, email verification, password recovery, outbound email, real payment/payout providers, multi-currency conversion, and a production legal/compliance review are not implemented.
+- **Localization:** broad Arabic/English coverage and RTL/LTR behavior are present, but native-speaker QA of every screen and creator-supplied translation is still needed.
+- **Production checks:** local tests do not validate Render configuration, domain/TLS behavior, persistent-disk semantics, backups, or real payment operations.
 
-### Phase 2: Backend Configuration ✓
-- [x] `requirements.txt` - All dependencies
-- [x] `config.py` - Application configuration
-- [x] `schema.sql` - Complete database schema with 11 tables
-- [x] `app.py` - Full Flask application with 40+ routes
-- [x] `run.py` - Application runner
-- [x] `migrations.py` - Database initialization & seeding
-- [x] `.env.example` - Environment variables
-- [x] `.gitignore` - Git ignore rules
-
-### Phase 3: Frontend Templates ✓
-- [x] `home.html` - Homepage with featured products
-- [x] `login.html` - User login page
-- [x] `register.html` - User registration (customer/creator)
-- [x] `products.html` - Products browse & search & filter
-- [x] `product_detail.html` - Single product page with reviews
-- [x] `cart.html` - Shopping cart
-- [x] `checkout.html` - Payment page (DISABLED - development)
-- [x] `customer/dashboard.html` - Customer dashboard
-- [x] `customer/library.html` - My Library (purchased products)
-- [x] `customer/account.html` - Account settings
-- [x] `creator/dashboard.html` - Creator dashboard with stats
-- [x] `creator/products.html` - Creator product management
-- [x] `creator/upload.html` - Upload new product
-- [x] `creator/earnings.html` - Earnings & withdrawals (READ-ONLY)
-- [x] `admin/dashboard.html` - Admin overview
-- [x] `admin/products.html` - Admin product review & approval
-- [x] `admin/users.html` - User management
-- [x] `admin/withdrawals.html` - Withdrawal management
-
-### Phase 4: Error Pages ✓
-- [x] `errors/404.html` - Page not found
-- [x] `errors/500.html` - Server error
-- [x] `errors/403.html` - Access denied
-
-### Phase 5: Static Assets ✓
-- [x] `static/css/style.css` - Complete styling (700+ lines)
-- [x] `static/js/main.js` - Utility functions & helpers
-
-### Phase 6: Database & Migrations ✓
-- [x] 11 Database tables created
-- [x] Default categories seeded (6 categories)
-- [x] Test accounts created:
-  - Admin: admin@proassets.test / Admin@123456
-  - Creator: creator@proassets.test / Creator@123456
-  - Customer: customer@proassets.test / Customer@123456
-
----
-
-## 📊 Project Statistics
-
-**Total Files:** 25+
-**Total Lines of Code:** 8,500+
-**Database Tables:** 11
-**Routes/Endpoints:** 40+
-**HTML Templates:** 18
-**CSS Lines:** 700+
-**JavaScript Functions:** 20+
-
----
-
-## 🔒 Security Measures (Development)
-
-✅ Password hashing with Werkzeug
-✅ Session management with Flask
-✅ Payment routes disabled (503 error)
-✅ Withdrawal routes disabled
-✅ SQL injection prevention (parameterized queries)
-✅ File upload validation
-✅ User role-based access control
-
----
-
-## 🧪 Testing Credentials
-
-### Admin Account
-- Email: `admin@proassets.test`
-- Password: `Admin@123456`
-- Role: Administrator
-
-### Creator Account
-- Email: `creator@proassets.test`
-- Password: `Creator@123456`
-- Role: Content Creator
-
-### Customer Account
-- Email: `customer@proassets.test`
-- Password: `Customer@123456`
-- Role: Regular Customer
-
----
-
-## ⚠️ Known Limitations (Development)
-
-- Payments disabled (TEST MODE)
-- Withdrawals disabled (TEST MODE)
-- Email notifications not configured
-- File storage is local (not R2/S3)
-- No real payment processing
-- Download tokens not implemented
-- Search optimization pending
-
----
-
-## 🚀 Setup Instructions
-
-### Local Development
-
-```bash
-# 1. Clone repository
-git clone https://github.com/[username]/proassets.git
-cd proassets
-
-# 2. Run setup script
-chmod +x setup.sh
-./setup.sh
-
-# 3. Activate virtual environment
-source venv/bin/activate
-
-# 4. Start server
-python3 run.py
+## Setup
+See `README.md` for local setup, first-admin bootstrap, Render configuration, manual order handling, tests, and release limits.

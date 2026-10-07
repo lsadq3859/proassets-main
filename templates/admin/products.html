@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
@@ -296,21 +297,24 @@
             margin-top: 4rem;
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/brand.css') }}">
 </head>
 <body>
+    <script src="{{ url_for('static', filename='js/site-i18n.js') }}" defer></script>
     <!-- Header -->
     <header>
         <nav>
-            <div class="logo">💎 ProAssets Admin</div>
+            <div class="logo">{% include 'partials/brand_logo.html' %}<span class="brand-lockup__suffix">Admin</span></div>
             <ul>
                 <li><a href="/admin">Dashboard</a></li>
+                <li><a href="/admin/orders">Orders</a></li>
                 <li><a href="/admin/products">Products</a></li>
                 <li><a href="/admin/users">Users</a></li>
                 <li><a href="/admin/withdrawals">Withdrawals</a></li>
             </ul>
             <ul>
                 <li><a href="/">Home</a></li>
-                <li><a href="/logout">Logout</a></li>
+                <li><form method="post" action="{{ url_for('logout') }}" style="display:inline"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit" style="color:inherit;background:none;border:0;font:inherit;cursor:pointer;padding:0;text-decoration:none">Logout</button></form></li>
             </ul>
         </nav>
     </header>
@@ -353,17 +357,15 @@
                     {% for product in products %}
                     <tr>
                         <td>
-                            <a href="/product/{{ product.slug }}" class="product-link">
-                                {{ product.title_en }}
-                            </a>
+                            <a href="/product/{{ product.slug }}" class="product-link" data-lang-en="{{ product.title_en }}" data-lang-ar="{{ product.title_ar or product.title_en }}">{{ product.title_en }}</a>
                         </td>
                         <td>
-                            <a href="/admin/user/{{ product.creator_id }}" class="creator-link">
+                            <a href="/admin/users" class="creator-link">
                                 {{ product.username }}
                             </a>
                         </td>
-                        <td>{{ product.name_en }}</td>
-                        <td class="price">${{ product.price }}</td>
+                        <td data-lang-en="{{ product.category_name_en }}" data-lang-ar="{{ product.category_name_ar or product.category_name_en }}">{{ product.category_name_en }}</td>
+                        <td class="price"><bdi dir="ltr">{{ product.currency or 'USD' }} {{ '%.2f'|format(product.price) }}</bdi></td>
                         <td>
                             <span class="status-badge status-{{ product.status }}">
                                 {{ product.status }}
@@ -400,9 +402,8 @@
         <div class="modal-content">
             <h2>Reject Product</h2>
             <p style="color: #666; margin-bottom: 1rem;">
-                Why are you rejecting this product?
+                This will keep the product unpublished in the marketplace.
             </p>
-            <textarea id="rejectionReason" placeholder="Enter rejection reason..."></textarea>
             <div class="modal-buttons">
                 <button class="modal-btn modal-btn-submit" onclick="submitReject()">
                     ✗ Reject Product
@@ -416,17 +417,30 @@
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2024 ProAssets. All rights reserved. | Admin Panel</p>
+        <p>&copy; 2026 ProAssets. All rights reserved. | Admin Panel</p>
     </footer>
 
     <script>
         let currentProductId = null;
 
+        async function updateProductStatus(productId, action) {
+            try {
+                const response = await fetch(`/admin/product/${productId}/${action}`, {
+                    method: 'POST',
+                    headers: { 'Accept': 'application/json', 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content }
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || 'Unable to update product status');
+                alert(data.message || (action === 'approve' ? 'Product approved.' : 'Product rejected.'));
+                location.reload();
+            } catch (error) {
+                alert(error.message || 'A network error occurred. Please try again.');
+            }
+        }
+
         function approveProduct(productId) {
             if (confirm('Are you sure you want to approve this product?')) {
-                // API call would go here
-                alert('✅ Product approved! (Feature coming soon)');
-                location.reload();
+                updateProductStatus(productId, 'approve');
             }
         }
 
@@ -437,22 +451,14 @@
 
         function closeRejectModal() {
             document.getElementById('rejectModal').style.display = 'none';
-            document.getElementById('rejectionReason').value = '';
             currentProductId = null;
         }
 
         function submitReject() {
-            const reason = document.getElementById('rejectionReason').value;
-            
-            if (!reason.trim()) {
-                alert('Please enter a rejection reason');
-                return;
-            }
-
-            // API call would go here
-            alert('❌ Product rejected! (Feature coming soon)');
+            if (!currentProductId) return;
+            const productId = currentProductId;
             closeRejectModal();
-            location.reload();
+            updateProductStatus(productId, 'reject');
         }
 
         function searchProducts() {

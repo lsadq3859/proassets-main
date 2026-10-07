@@ -219,12 +219,14 @@
             margin-top: 4rem;
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/brand.css') }}">
 </head>
 <body>
+    <script src="{{ url_for('static', filename='js/site-i18n.js') }}" defer></script>
     <!-- Header -->
     <header>
         <nav>
-            <div class="logo">💎 ProAssets</div>
+            <div class="logo">{% include 'partials/brand_logo.html' %}</div>
             <ul>
                 <li><a href="/">Home</a></li>
                 <li><a href="/products">Products</a></li>
@@ -277,33 +279,33 @@
             <div class="features">
                 <div class="feature">
                     <div class="feature-icon">🌍</div>
-                    <h3>Global Reach</h3>
-                    <p>Sell to customers around the world in multiple currencies and languages</p>
+                    <h3>Arabic &amp; English</h3>
+                    <p>Browse and manage products in Arabic or English; listing prices retain the seller-set currency</p>
                 </div>
                 <div class="feature">
                     <div class="feature-icon">💰</div>
                     <h3>Fair Commission</h3>
-                    <p>Keep 80% of your sales. We only take 20% to maintain our platform</p>
+                    <p>Creator earnings are recorded at 80% after commission; payouts are currently disabled and balances are not paid funds</p>
                 </div>
                 <div class="feature">
                     <div class="feature-icon">🔒</div>
-                    <h3>Secure & Reliable</h3>
-                    <p>Your data and transactions are protected with enterprise-grade security</p>
+                    <h3>Protected Downloads</h3>
+                    <p>Product files are stored privately; authorized downloads require a library entitlement</p>
                 </div>
                 <div class="feature">
                     <div class="feature-icon">📊</div>
-                    <h3>Analytics & Insights</h3>
-                    <p>Track your sales, earnings, and customer behavior in real-time</p>
+                    <h3>Sales Records</h3>
+                    <p>Review completed sales and recorded earnings from your creator dashboard</p>
                 </div>
                 <div class="feature">
                     <div class="feature-icon">⚡</div>
-                    <h3>Instant Delivery</h3>
-                    <p>Customers receive their purchases instantly after payment</p>
+                    <h3>Clear Delivery Status</h3>
+                    <p>Free products are delivered immediately; paid requests remain pending until manual payment is verified by an administrator</p>
                 </div>
                 <div class="feature">
                     <div class="feature-icon">🤝</div>
-                    <h3>Support</h3>
-                    <p>Our dedicated team is here to help you succeed</p>
+                    <h3>Manual Payment Support</h3>
+                    <p>Paid orders are completed outside the app after you contact support; no online payment gateway is enabled</p>
                 </div>
             </div>
         </div>
@@ -331,25 +333,13 @@
             </div>
         </div>
 
-        <!-- Team -->
+        <!-- Marketplace flow -->
         <div class="section">
-            <h2>Our Team</h2>
-            <div class="team">
-                <div class="team-member">
-                    <div class="team-avatar">👨‍💼</div>
-                    <h3>Founder & CEO</h3>
-                    <p>Passionate about empowering creators</p>
-                </div>
-                <div class="team-member">
-                    <div class="team-avatar">👨‍💻</div>
-                    <h3>CTO</h3>
-                    <p>Building robust technology solutions</p>
-                </div>
-                <div class="team-member">
-                    <div class="team-avatar">👩‍💼</div>
-                    <h3>Operations</h3>
-                    <p>Ensuring smooth platform operations</p>
-                </div>
+            <h2>How the marketplace works</h2>
+            <div class="values">
+                <div class="value"><h3>1. Creators submit products</h3><p>Creators provide product details in English and Arabic. Listings are reviewed before publication.</p></div>
+                <div class="value"><h3>2. Customers submit requests</h3><p>Free products are added to a library immediately. Paid products create a pending request; the app does not collect money.</p></div>
+                <div class="value"><h3>3. Admins verify manual payment</h3><p>An administrator confirms receipt before a paid product is added to the customer library. Creator payouts are not enabled.</p></div>
             </div>
         </div>
 
@@ -363,7 +353,7 @@
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2024 ProAssets. All rights reserved.</p>
+        <p>&copy; 2026 ProAssets. All rights reserved.</p>
     </footer>
 </body>
 </html>

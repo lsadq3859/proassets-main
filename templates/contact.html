@@ -1,1 +1,53 @@
-<!doctype html><html lang="en" dir="ltr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{{ title }}</title><link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"></head><body><main class="container"><h1>Contact us</h1><p>Send us your question or feedback.</p><form method="post" onsubmit="sendMessage(event)"><div class="form-group"><label for="subject">Subject</label><input id="subject" name="subject" required maxlength="160"></div><div class="form-group"><label for="message">Message</label><textarea id="message" name="message" required maxlength="5000"></textarea></div><button class="btn" type="submit">Send message</button></form><p><a href="/">Back to home</a></p></main><script>async function sendMessage(e){e.preventDefault();const f=e.target;const r=await fetch('/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subject:f.subject.value,message:f.message.value})});const d=await r.json();alert(d.message);if(r.ok)f.reset();}</script></body></html>
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/brand.css') }}">
+    <style>
+        body{background:#F1F5F9;color:#1F2937;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;margin:0}.contact-shell{max-width:900px;margin:32px auto;padding:0 16px}.contact-card{background:#fff;border:1px solid #E2E8F0;border-radius:18px;box-shadow:0 12px 34px rgba(15,23,42,.07);padding:clamp(20px,4vw,40px)}.contact-card h1{color:#0F172A;margin-top:0}.contact-card>p{color:#64748B}.contact-form{display:grid;gap:16px;margin-top:22px}.form-group label{display:block;font-weight:700;margin-bottom:7px}.form-group input,.form-group textarea{width:100%;border:1px solid #CBD5E1;border-radius:9px;padding:12px;font:inherit}.form-group textarea{min-height:170px;resize:vertical}.form-group input:focus,.form-group textarea:focus{outline:3px solid #DDD6FE;border-color:#7C3AED}.btn{border:0;border-radius:9px;padding:12px 18px;background:#7C3AED;color:#fff;font:inherit;font-weight:750;cursor:pointer}.btn:disabled{opacity:.65;cursor:wait}.feedback{display:none;padding:12px 14px;border-radius:9px}.feedback.ok{display:block;background:#DCFCE7;color:#166534}.feedback.error{display:block;background:#FEE2E2;color:#991B1B}.back{display:inline-block;margin-top:20px;color:#6D28D9;font-weight:700;text-decoration:none}
+        @media(max-width:600px){.contact-shell{margin:16px auto}.btn{width:100%}}
+    </style>
+</head>
+<body>
+    <script src="{{ url_for('static', filename='js/site-i18n.js') }}" defer></script>
+    <main class="contact-shell">
+        <div class="contact-card">
+            <div class="brand-lockup">{% include 'partials/brand_logo.html' %}</div>
+            <h1>Contact us</h1>
+            <p>Send us your question or feedback. Messages are delivered to the ProAssets support inbox for administrator review.</p>
+            <div id="messageFeedback" class="feedback" role="status" aria-live="polite"></div>
+            <form class="contact-form" id="contactForm" method="post" action="{{ url_for('contact') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="form-group"><label for="subject">Subject</label><input id="subject" name="subject" required maxlength="160" autocomplete="off"></div>
+                <div class="form-group"><label for="message">Message</label><textarea id="message" name="message" required maxlength="5000"></textarea></div>
+                <button class="btn" type="submit">Send message</button>
+            </form>
+            <a class="back" href="{{ url_for('home') }}">Back to home</a>
+        </div>
+    </main>
+    <script>
+        const contactForm=document.getElementById('contactForm');
+        const feedback=document.getElementById('messageFeedback');
+        contactForm.addEventListener('submit',async event=>{
+            event.preventDefault();
+            const button=contactForm.querySelector('button[type="submit"]');
+            button.disabled=true;
+            try{
+                const response=await fetch(contactForm.action,{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':document.querySelector('meta[name="csrf-token"]').content},body:JSON.stringify({subject:contactForm.subject.value,message:contactForm.message.value})});
+                const result=await response.json();
+                if(!response.ok) throw new Error(result.message||'Unable to send your message.');
+                feedback.textContent=result.message;
+                feedback.className='feedback ok';
+                contactForm.reset();
+            }catch(error){
+                feedback.textContent=error.message||'Network error. Please try again.';
+                feedback.className='feedback error';
+            }finally{button.disabled=false;}
+        });
+    </script>
+</body>
+</html>

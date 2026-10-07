@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS users (
     profile_image TEXT,
     is_active BOOLEAN DEFAULT 1,
     is_verified BOOLEAN DEFAULT 0,
+    auth_version INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -170,6 +171,17 @@ CREATE TABLE IF NOT EXISTS messages (
     FOREIGN KEY (sender_id) REFERENCES users(id)
 );
 
+-- تفضيلات الحساب. لا تعني تفعيل إرسال البريد أو تحويل العملات.
+CREATE TABLE IF NOT EXISTS user_preferences (
+    user_id INTEGER PRIMARY KEY,
+    email_notifications BOOLEAN NOT NULL DEFAULT 0,
+    marketing_emails BOOLEAN NOT NULL DEFAULT 0,
+    order_updates BOOLEAN NOT NULL DEFAULT 0,
+    currency TEXT NOT NULL DEFAULT 'USD' CHECK (currency IN ('USD', 'EUR', 'GBP', 'AED')),
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
 -- جدول الإعدادات
 CREATE TABLE IF NOT EXISTS settings (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -187,6 +199,7 @@ CREATE INDEX IF NOT EXISTS idx_orders_product_id ON orders(product_id);
 CREATE INDEX IF NOT EXISTS idx_orders_payment_status ON orders(payment_status);
 CREATE INDEX IF NOT EXISTS idx_reviews_product_id ON reviews(product_id);
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_messages_status_created ON messages(status, created_at);
 
 -- إدراج أقسام افتراضية
 INSERT OR IGNORE INTO categories (id, name_en, name_ar, slug, description_en, description_ar, icon, is_active) VALUES

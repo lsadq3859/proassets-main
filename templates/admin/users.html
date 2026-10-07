@@ -258,21 +258,24 @@
             margin-top: 4rem;
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/brand.css') }}">
 </head>
 <body>
+    <script src="{{ url_for('static', filename='js/site-i18n.js') }}" defer></script>
     <!-- Header -->
     <header>
         <nav>
-            <div class="logo">💎 ProAssets Admin</div>
+            <div class="logo">{% include 'partials/brand_logo.html' %}<span class="brand-lockup__suffix">Admin</span></div>
             <ul>
                 <li><a href="/admin">Dashboard</a></li>
+                <li><a href="/admin/orders">Orders</a></li>
                 <li><a href="/admin/products">Products</a></li>
                 <li><a href="/admin/users">Users</a></li>
                 <li><a href="/admin/withdrawals">Withdrawals</a></li>
             </ul>
             <ul>
                 <li><a href="/">Home</a></li>
-                <li><a href="/logout">Logout</a></li>
+                <li><form method="post" action="{{ url_for('logout') }}" style="display:inline"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit" style="color:inherit;background:none;border:0;font:inherit;cursor:pointer;padding:0;text-decoration:none">Logout</button></form></li>
             </ul>
         </nav>
     </header>
@@ -280,8 +283,8 @@
     <div class="container">
         <!-- Page Header -->
         <div class="page-header">
-            <h1>👥 User Management</h1>
-            <p style="color: #666;">View and manage all platform users</p>
+            <h1>👥 User Directory</h1>
+            <p style="color: #666;">View registered platform users. Account suspension and activation controls are not enabled.</p>
         </div>
 
         <!-- Mini Stats -->
@@ -330,7 +333,6 @@
                         <th>Role</th>
                         <th>Status</th>
                         <th>Joined</th>
-                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -358,24 +360,6 @@
                             </span>
                         </td>
                         <td>{{ user.created_at }}</td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="action-btn btn-view" onclick="viewUser({{ user.id }})">
-                                    View
-                                </button>
-                                {% if user.role != 'admin' %}
-                                {% if user.is_active %}
-                                <button class="action-btn btn-suspend" onclick="suspendUser({{ user.id }})">
-                                    Suspend
-                                </button>
-                                {% else %}
-                                <button class="action-btn btn-activate" onclick="activateUser({{ user.id }})">
-                                    Activate
-                                </button>
-                                {% endif %}
-                                {% endif %}
-                            </div>
-                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -390,7 +374,7 @@
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2024 ProAssets. All rights reserved. | Admin Panel</p>
+        <p>&copy; 2026 ProAssets. All rights reserved. | Admin Panel</p>
     </footer>
 
     <script>
@@ -419,21 +403,6 @@
             });
         }
 
-        function viewUser(userId) {
-            alert('👤 User details feature coming soon! User ID: ' + userId);
-        }
-
-        function suspendUser(userId) {
-            if (confirm('Suspend this user? They will not be able to log in.')) {
-                alert('⏸️ User suspended! (Feature coming soon)');
-            }
-        }
-
-        function activateUser(userId) {
-            if (confirm('Activate this user?')) {
-                alert('✅ User activated! (Feature coming soon)');
-            }
-        }
     </script>
 </body>
 </html>

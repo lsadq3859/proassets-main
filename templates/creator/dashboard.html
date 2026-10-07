@@ -122,6 +122,8 @@
             font-weight: bold;
             margin-bottom: 0.5rem;
         }
+        .currency-breakdown { font-size: 1.15rem; line-height: 1.5; overflow-wrap: anywhere; }
+        .currency-breakdown span { display: block; }
         
         .stat-label {
             color: #666;
@@ -153,6 +155,8 @@
             border-collapse: collapse;
             margin-top: 1rem;
         }
+        .table-scroll { width:100%; max-width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+        .table-scroll table { min-width:520px; }
         
         th {
             background: #F3F4F6;
@@ -231,6 +235,8 @@
         }
         
         .wallet-btn {
+            display: inline-flex;
+            align-items: center;
             padding: 0.8rem 1.5rem;
             background: white;
             color: #7C3AED;
@@ -238,8 +244,10 @@
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
+            text-decoration: none;
             transition: background 0.3s;
         }
+        .payout-note { margin: 0 0 1rem; padding: .75rem; border-radius: 8px; background: rgba(255,255,255,.15); }
         
         .wallet-btn:hover {
             background: #E0E7FF;
@@ -278,12 +286,14 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/brand.css') }}">
 </head>
 <body>
+    <script src="{{ url_for('static', filename='js/site-i18n.js') }}" defer></script>
     <!-- Header -->
     <header>
         <nav>
-            <div class="logo">💎 ProAssets</div>
+            <div class="logo">{% include 'partials/brand_logo.html' %}</div>
             <ul>
                 <li><a href="/">Home</a></li>
                 <li><a href="/creator/products">My Products</a></li>
@@ -291,7 +301,7 @@
             </ul>
             <ul>
                 <li><a href="/account">Account</a></li>
-                <li><a href="/logout">Logout</a></li>
+                <li><form method="post" action="{{ url_for('logout') }}" style="display:inline"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit" style="color:inherit;background:none;border:0;font:inherit;cursor:pointer;padding:0;text-decoration:none">Logout</button></form></li>
             </ul>
         </nav>
     </header>
@@ -312,20 +322,14 @@
         <!-- Wallet Section -->
         {% if wallet %}
         <div class="wallet-section">
-            <div class="wallet-label">Available Balance</div>
-            <div class="wallet-balance">${{ wallet.balance }}</div>
+            <div class="wallet-label">Recorded Balance (not paid)</div>
+            <div class="wallet-balance"><bdi dir="ltr">{{ wallet.currency or 'USD' }} {{ '%.2f'|format(wallet.balance or 0) }}</bdi></div>
             <p style="margin-bottom: 1rem; opacity: 0.9;">
-                Total Earnings: <strong>${{ wallet.total_earnings }}</strong>
+                Recorded earnings: <strong><bdi dir="ltr">{{ wallet.currency or 'USD' }} {{ '%.2f'|format(wallet.total_earnings or 0) }}</bdi></strong>
             </p>
+            <p class="payout-note">Creator payouts are disabled in this version. These ledger balances are not paid funds.</p>
             <div class="wallet-actions">
-                <button class="wallet-btn" onclick="window.location.href='/creator/earnings'">
-                    💰 View Details
-                </button>
-                {% if wallet.balance > 0 %}
-                <button class="wallet-btn" onclick="window.location.href='/creator/earnings'">
-                    💳 Request Withdrawal
-                </button>
-                {% endif %}
+                <a class="wallet-btn" href="{{ url_for('creator_earnings') }}">💰 View earnings and payout status</a>
             </div>
         </div>
         {% endif %}
@@ -337,16 +341,16 @@
                 <div class="stat-label">Total Products</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">{{ sales|map(attribute='sales_count')|sum }}</div>
+                <div class="stat-number">{{ sales_stats.total_sales or 0 }}</div>
                 <div class="stat-label">Total Sales</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">${{ sales|map(attribute='price')|sum }}</div>
+                <div class="stat-number currency-breakdown">{% if sales_by_currency %}{% for row in sales_by_currency %}<span><bdi dir="ltr">{{ row.currency }} {{ '%.2f'|format(row.gross_revenue or 0) }}</bdi></span>{% endfor %}{% else %}<span><bdi dir="ltr">USD 0.00</bdi></span>{% endif %}</div>
                 <div class="stat-label">Revenue (Before Commission)</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">${{ (sales|map(attribute='price')|sum * 0.8)|round(2) }}</div>
-                <div class="stat-label">Your Earnings (80%)</div>
+                <div class="stat-number currency-breakdown">{% if sales_by_currency %}{% for row in sales_by_currency %}<span><bdi dir="ltr">{{ row.currency }} {{ '%.2f'|format(row.creator_earnings or 0) }}</bdi></span>{% endfor %}{% else %}<span><bdi dir="ltr">USD 0.00</bdi></span>{% endif %}</div>
+                <div class="stat-label">Your Earnings (80%) — ledger only, not paid</div>
             </div>
         </div>
 
@@ -356,7 +360,7 @@
             <div class="card">
                 <h2>📚 Recent Products</h2>
                 {% if products %}
-                <table>
+                <div class="table-scroll"><table>
                     <thead>
                         <tr>
                             <th>Product</th>
@@ -368,9 +372,7 @@
                         {% for product in products %}
                         <tr>
                             <td>
-                                <a href="/product/{{ product.slug }}" class="product-link">
-                                    {{ product.title_en }}
-                                </a>
+                                {% if product.status == 'published' %}<a href="/product/{{ product.slug }}" class="product-link" data-lang-en="{{ product.title_en }}" data-lang-ar="{{ product.title_ar or product.title_en }}">{{ product.title_en }}</a>{% else %}<span data-lang-en="{{ product.title_en }}" data-lang-ar="{{ product.title_ar or product.title_en }}">{{ product.title_en }}</span>{% endif %}
                             </td>
                             <td>
                                 <span class="status-badge status-{{ product.status }}">
@@ -378,12 +380,12 @@
                                 </span>
                             </td>
                             <td>
-                                <a href="/product/{{ product.slug }}" style="color: #7C3AED; text-decoration: none;">View</a>
+                                {% if product.status == 'published' %}<a href="/product/{{ product.slug }}" style="color: #7C3AED; text-decoration: none;">View</a>{% else %}<a href="{{ url_for('edit_creator_product', product_id=product.id) }}" style="color:#7C3AED;text-decoration:none">Edit</a>{% endif %}
                             </td>
                         </tr>
                         {% endfor %}
                     </tbody>
-                </table>
+                </table></div>
                 <div style="text-align: center; margin-top: 1rem;">
                     <a href="/creator/products" style="color: #7C3AED; text-decoration: none;">View All →</a>
                 </div>
@@ -401,7 +403,7 @@
             <div class="card">
                 <h2>💰 Recent Sales</h2>
                 {% if sales %}
-                <table>
+                <div class="table-scroll"><table>
                     <thead>
                         <tr>
                             <th>Product</th>
@@ -413,16 +415,14 @@
                         {% for sale in sales %}
                         <tr>
                             <td>
-                                <a href="/product/{{ sale.title_en }}" class="product-link">
-                                    {{ sale.title_en }}
-                                </a>
+                                <a href="/product/{{ sale.slug }}" class="product-link" data-lang-en="{{ sale.title_en }}" data-lang-ar="{{ sale.title_ar or sale.title_en }}">{{ sale.title_en }}</a>
                             </td>
-                            <td class="price">${{ sale.price }}</td>
+                            <td class="price"><bdi dir="ltr">{{ sale.currency or 'USD' }} {{ '%.2f'|format(sale.price) }}</bdi></td>
                             <td>{{ sale.created_at }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
-                </table>
+                </table></div>
                 {% else %}
                 <div class="empty-state">
                     <p>No sales yet. Upload products to start earning!</p>
@@ -434,7 +434,7 @@
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2024 ProAssets. All rights reserved.</p>
+        <p>&copy; 2026 ProAssets. All rights reserved.</p>
     </footer>
 </body>
 </html>

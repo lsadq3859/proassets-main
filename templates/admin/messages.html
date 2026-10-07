@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/brand.css') }}">
+    <style>
+        :root{--purple:#7C3AED;--navy:#0F172A;--ink:#1F2937;--muted:#64748B;--line:#E2E8F0;--page:#F1F5F9}
+        *{box-sizing:border-box}body{margin:0;background:var(--page);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+        header{background:linear-gradient(120deg,var(--purple),#5B21B6);color:#fff}nav{max-width:1240px;margin:auto;padding:12px 20px;display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap}nav ul{list-style:none;display:flex;gap:16px;padding:0;margin:0;flex-wrap:wrap}nav a{color:#fff;text-decoration:none;font-weight:650}
+        main{max-width:1060px;margin:auto;padding:26px 16px 54px}.head,.filters,.message{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 28px rgba(15,23,42,.05)}.head{padding:22px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}h1{margin:0;color:var(--navy);font-size:clamp(1.5rem,4vw,2rem)}.sub{margin:5px 0 0;color:var(--muted)}.count{background:#FEF3C7;color:#92400E;border-radius:999px;padding:8px 13px;font-weight:750}
+        .filters{display:flex;gap:8px;padding:10px;margin-bottom:16px;flex-wrap:wrap}.filters a{padding:8px 12px;text-decoration:none;color:#475569;border-radius:8px;font-weight:650}.filters a.active{background:#F3E8FF;color:#6D28D9}.list{display:grid;gap:12px}.message{padding:18px 20px}.message-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start}.subject{margin:0;color:var(--navy);font-size:1.08rem;overflow-wrap:anywhere}.meta{margin:4px 0 0;color:var(--muted);font-size:.88rem;overflow-wrap:anywhere}.status{display:inline-block;border-radius:999px;padding:4px 9px;font-size:.8rem;font-weight:750;text-transform:capitalize}.status-open{color:#92400E;background:#FEF3C7}.status-closed{color:#166534;background:#DCFCE7}.body{margin:15px 0 0;padding:14px;background:#F8FAFC;border-radius:10px;white-space:pre-wrap;overflow-wrap:anywhere}.actions{display:flex;justify-content:flex-end;margin-top:12px}.close-btn{border:0;border-radius:8px;padding:9px 13px;background:#DCFCE7;color:#166534;font:inherit;font-weight:700;cursor:pointer}.close-btn:disabled{opacity:.6;cursor:wait}.empty{text-align:center;color:var(--muted);padding:48px 14px;background:#fff;border:1px solid var(--line);border-radius:16px}.notice{display:none;padding:11px 14px;border-radius:9px;margin-bottom:12px}.notice.ok{display:block;background:#DCFCE7;color:#166534}.notice.err{display:block;background:#FEE2E2;color:#991B1B}.pagination{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:18px}.pagination a{background:#fff;color:#6D28D9;text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-weight:700}.pagination span{color:var(--muted);font-weight:650}
+        @media(max-width:680px){nav{align-items:flex-start}.head{padding:17px}.message{padding:15px}.actions .close-btn{width:100%}}
+    </style>
+</head>
+<body>
+    <script src="{{ url_for('static', filename='js/site-i18n.js') }}" defer></script>
+    <header><nav aria-label="Admin navigation">
+        <div class="brand-lockup">{% include 'partials/brand_logo.html' %}<span class="brand-lockup__suffix">Admin</span></div>
+        <ul>
+            <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('admin_orders') }}">Orders</a></li>
+            <li><a href="{{ url_for('admin_messages') }}" aria-current="page">Messages</a></li>
+            <li><a href="{{ url_for('admin_products') }}">Products</a></li>
+            <li><a href="{{ url_for('admin_users') }}">Users</a></li>
+            <li><a href="{{ url_for('admin_withdrawals') }}">Withdrawals</a></li>
+        </ul>
+        <ul><li><a href="{{ url_for('home') }}">Home</a></li><li><form method="post" action="{{ url_for('logout') }}" style="display:inline"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit" style="color:inherit;background:none;border:0;font:inherit;cursor:pointer;padding:0">Logout</button></form></li></ul>
+    </nav></header>
+    <main>
+        <div id="notice" class="notice" role="status" aria-live="polite"></div>
+        <section class="head">
+            <div><h1>Support inbox</h1><p class="sub">Read messages submitted through the public contact form. Replies are not sent automatically; use the sender’s email client if provided.</p></div>
+            <div class="count">{{ open_count }} open</div>
+        </section>
+        <nav class="filters" aria-label="Filter messages">
+            {% for value,label in [('open','Open'),('closed','Closed'),('all','All messages')] %}
+            <a href="{{ url_for('admin_messages', status=value) }}" class="{% if current_status == value %}active{% endif %}">{{ label }}{% if value == 'open' %} ({{ open_count }}){% endif %}</a>
+            {% endfor %}
+        </nav>
+        {% if messages %}
+        <div class="list">
+            {% for message in messages %}
+            <article class="message" id="message-{{ message.id }}">
+                <div class="message-head">
+                    <div>
+                        <h2 class="subject">{{ message.subject }}</h2>
+                        <p class="meta">{{ message.sender_username or 'Guest' }}{% if message.sender_email %} · <a href="mailto:{{ message.sender_email }}">{{ message.sender_email }}</a>{% endif %} · {{ message.created_at }}</p>
+                    </div>
+                    <span class="status status-{{ message.status }}">{{ message.status }}</span>
+                </div>
+                <div class="body">{{ message.message }}</div>
+                {% if message.status == 'open' %}
+                <div class="actions"><form method="post" action="{{ url_for('close_message', message_id=message.id) }}" data-close-message="{{ message.id }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="close-btn" type="submit">Mark closed</button></form></div>
+                {% endif %}
+            </article>
+            {% endfor %}
+        </div>
+        {% if total_pages > 1 %}
+        <nav class="pagination" aria-label="Message pages">
+            {% if page > 1 %}<a href="{{ url_for('admin_messages', status=current_status, page=page-1) }}">Previous</a>{% endif %}
+            <span>Page {{ page }} of {{ total_pages }} · {{ total_messages }} messages</span>
+            {% if page < total_pages %}<a href="{{ url_for('admin_messages', status=current_status, page=page+1) }}">Next</a>{% endif %}
+        </nav>
+        {% endif %}
+        {% else %}<div class="empty">No messages in this view.</div>{% endif %}
+    </main>
+    <script>
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        const notice = document.getElementById('notice');
+        document.querySelectorAll('form[data-close-message]').forEach(form => {
+            form.addEventListener('submit', async event => {
+                event.preventDefault();
+                const button = form.querySelector('button');
+                button.disabled = true;
+                try {
+                    const response = await fetch(form.action, {method:'POST', headers:{'X-CSRF-Token':csrfToken}});
+                    const data = await response.json();
+                    if (!response.ok) throw new Error(data.message || 'Unable to update message.');
+                    notice.textContent = data.message;
+                    notice.className = 'notice ok';
+                    setTimeout(() => location.reload(), 600);
+                } catch (error) {
+                    notice.textContent = error.message || 'Network error. Please try again.';
+                    notice.className = 'notice err';
+                    button.disabled = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

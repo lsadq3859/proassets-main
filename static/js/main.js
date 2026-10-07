@@ -70,6 +70,10 @@ async function apiRequest(url, method = 'GET', data = null) {
                 'Content-Type': 'application/json',
             }
         };
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+        if (csrfToken && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method.toUpperCase())) {
+            options.headers['X-CSRF-Token'] = csrfToken;
+        }
         
         if (data) {
             options.body = safeJsonify(data);
@@ -131,30 +135,14 @@ async function removeFromCart(productId) {
 /**
  * تحميل المنتج
  */
-async function downloadProduct(productId, productName) {
-    showWarning('Downloads are disabled during development');
-}
-
-/**
- * تقييم المنتج
- */
-async function submitReview(productId, rating, comment) {
-    if (!rating) {
-        showError('Please select a rating');
+function downloadProduct(productId) {
+    const id = Number(productId);
+    if (!Number.isSafeInteger(id) || id <= 0) {
+        showError('This download link is invalid.');
         return;
     }
-    
-    const response = await apiRequest(`/product/${productId}/review`, 'POST', {
-        rating: rating,
-        comment: comment
-    });
-    
-    if (response.ok) {
-        showSuccess('Review submitted!');
-        location.reload();
-    } else {
-        showError(response.data.message);
-    }
+    // The server enforces sign-in and library entitlement before sending the private file.
+    window.location.assign(`/download/${id}`);
 }
 
 // ===== Search & Filter =====
@@ -206,19 +194,21 @@ function getPasswordStrength(password) {
 // ===== User Session =====
 
 /**
- * التحقق من تسجيل الدخول
- */
-function isLoggedIn() {
-    // هذا يمكن التحقق منه من السيشن
-    return !!sessionStorage.getItem('user_id');
-}
-
-/**
  * تسجيل الخروج
  */
-function logout() {
-    if (confirm('Are you sure you want to logout?')) {
-        window.location.href = '/logout';
+async function logout() {
+    if (!confirm('Are you sure you want to logout?')) return;
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+    if (!csrfToken) {
+        showError('Refresh the page and try again.');
+        return;
+    }
+    try {
+        const response = await fetch('/logout', {method: 'POST', headers: {'X-CSRF-Token': csrfToken}});
+        if (!response.ok) throw new Error('Unable to log out. Please try again.');
+        window.location.assign('/');
+    } catch (error) {
+        showError(error.message || 'Network error. Please try again.');
     }
 }
 
@@ -261,7 +251,16 @@ function toggleModal(modalId) {
  * تنسيق السعر
  */
 function formatPrice(price, currency = 'USD') {
-    return `$${parseFloat(price).toFixed(2)}`;
+    const amount = Number(price);
+    const currencyCode = String(currency || 'USD').toUpperCase();
+    if (!Number.isFinite(amount)) return `${currencyCode} 0.00`;
+    try {
+        return new Intl.NumberFormat(document.documentElement.lang || 'en', {
+            style: 'currency', currency: currencyCode, currencyDisplay: 'code'
+        }).format(amount);
+    } catch (_) {
+        return `${currencyCode} ${amount.toFixed(2)}`;
+    }
 }
 
 /**

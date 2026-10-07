@@ -269,12 +269,14 @@
             transition: width 0.3s;
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/brand.css') }}">
 </head>
 <body>
+    <script src="{{ url_for('static', filename='js/site-i18n.js') }}" defer></script>
     <!-- Header -->
     <header>
         <nav>
-            <div class="logo">💎 ProAssets</div>
+            <div class="logo">{% include 'partials/brand_logo.html' %}</div>
             <ul>
                 <li><a href="/">Home</a></li>
                 <li><a href="/products">Shop</a></li>
@@ -283,7 +285,7 @@
             </ul>
             <ul>
                 <li><a href="/account">Account</a></li>
-                <li><a href="/logout">Logout</a></li>
+                <li><form method="post" action="{{ url_for('logout') }}" style="display:inline"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit" style="color:inherit;background:none;border:0;font:inherit;cursor:pointer;padding:0;text-decoration:none">Logout</button></form></li>
             </ul>
         </nav>
     </header>
@@ -329,15 +331,13 @@
                     <span class="card-type">{{ product.product_type }}</span>
                 </div>
                 <div class="card-content">
-                    <div class="card-title">{{ product.title_en }}</div>
+                    <div class="card-title" data-lang-en="{{ product.title_en }}" data-lang-ar="{{ product.title_ar or product.title_en }}">{{ product.title_en }}</div>
                     <div class="card-meta">
-                        💰 ${{ product.price }}
+                        💰 <bdi dir="ltr">{{ product.currency or 'USD' }} {{ '%.2f'|format(product.price) }}</bdi>
                     </div>
                     <div class="card-actions">
-                        <a href="/product/{{ product.slug }}" class="btn btn-secondary">View</a>
-                        <button class="btn" onclick="downloadProduct({{ product.id }}, '{{ product.title_en }}')">
-                            Download
-                        </button>
+                        {% if product.status == 'published' %}<a href="/product/{{ product.slug }}" class="btn btn-secondary">View</a>{% else %}<span class="btn btn-secondary" aria-label="Listing currently unavailable">Listing unavailable</span>{% endif %}
+                        <a href="{{ url_for('download_product', product_id=product.id) }}" class="btn">Download</a>
                     </div>
                 </div>
             </div>
@@ -360,19 +360,9 @@
         {% endif %}
     </div>
 
-    <!-- Download Progress Modal -->
-    <div class="download-progress" id="downloadProgress">
-        <h3>Downloading...</h3>
-        <p id="downloadName"></p>
-        <div class="progress-bar">
-            <div class="progress-fill" id="progressFill"></div>
-        </div>
-        <p id="downloadStatus">0%</p>
-    </div>
-
     <!-- Footer -->
     <footer>
-        <p>&copy; 2024 ProAssets. All rights reserved.</p>
+        <p>&copy; 2026 ProAssets. All rights reserved.</p>
     </footer>
 
     <script>
@@ -398,41 +388,7 @@
             });
         });
         
-        // Download function
-        function downloadProduct(productId, productName) {
-            const modal = document.getElementById('downloadProgress');
-            const nameEl = document.getElementById('downloadName');
-            const progressFill = document.getElementById('progressFill');
-            const statusEl = document.getElementById('downloadStatus');
-            
-            nameEl.textContent = productName;
-            modal.style.display = 'block';
-            progressFill.style.width = '0%';
-            statusEl.textContent = '0%';
-            
-            // Simulate download
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += Math.random() * 30;
-                if (progress > 100) progress = 100;
-                
-                progressFill.style.width = progress + '%';
-                statusEl.textContent = Math.floor(progress) + '%';
-                
-                if (progress === 100) {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        modal.style.display = 'none';
-                        alert('Download completed! Check your downloads folder.');
-                    }, 500);
-                }
-            }, 300);
-            
-            // Actual download trigger (in production, this would be a real file download)
-            setTimeout(() => {
-                window.location.href = `/download/${productId}`;
-            }, 100);
-        }
+
     </script>
 </body>
 </html>

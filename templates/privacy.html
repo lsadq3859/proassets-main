@@ -1,251 +1,69 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/brand.css') }}">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f8f9fa;
-            color: #333;
-            line-height: 1.8;
-        }
-        
-        header {
-            background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
-            color: white;
-            padding: 1rem 0;
-        }
-        
-        nav {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 2rem;
-        }
-        
-        .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-        }
-        
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin-left: 2rem;
-        }
-        
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-        
-        .page-header {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .page-header h1 {
-            color: #7C3AED;
-            margin-bottom: 0.5rem;
-        }
-        
-        .page-header p {
-            color: #666;
-        }
-        
-        .content {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        h2 {
-            color: #7C3AED;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-        }
-        
-        h3 {
-            color: #333;
-            margin-top: 1.5rem;
-            margin-bottom: 0.8rem;
-        }
-        
-        p {
-            color: #666;
-            margin-bottom: 1rem;
-        }
-        
-        ul {
-            margin-left: 2rem;
-            margin-bottom: 1rem;
-        }
-        
-        li {
-            margin-bottom: 0.5rem;
-            color: #666;
-        }
-        
-        .highlight {
-            background: #E0E7FF;
-            padding: 1rem;
-            border-radius: 5px;
-            margin: 1rem 0;
-            color: #4C1D95;
-        }
-        
-        footer {
-            background: #1F2937;
-            color: white;
-            text-align: center;
-            padding: 2rem;
-            margin-top: 4rem;
-        }
+        :root{--purple:#7C3AED;--navy:#0F172A;--ink:#1F2937;--muted:#64748B;--line:#E2E8F0;--page:#F1F5F9}
+        *{box-sizing:border-box}body{margin:0;background:var(--page);color:var(--ink);font:16px/1.75 system-ui,-apple-system,"Segoe UI",sans-serif}
+        header{background:linear-gradient(120deg,var(--purple),#5B21B6);color:#fff}nav{max-width:1080px;margin:auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}nav a{color:#fff;text-decoration:none;font-weight:650;margin-inline-start:16px}
+        main{max-width:900px;margin:34px auto;padding:0 18px 50px}.paper{background:#fff;border:1px solid var(--line);border-radius:18px;padding:clamp(22px,5vw,48px);box-shadow:0 12px 36px #0f172a0c}
+        h1{margin:0;color:var(--navy);font-size:clamp(1.8rem,4vw,2.5rem);line-height:1.2}h2{margin:30px 0 8px;color:#6D28D9;font-size:1.2rem}h3{margin:18px 0 6px;color:var(--navy);font-size:1rem}p{margin:9px 0;color:#475569}ul{padding-inline-start:24px;color:#475569}li{margin:6px 0}.updated{color:var(--muted);font-size:.92rem}.notice{margin:22px 0;padding:16px 18px;border-radius:12px;background:#F3E8FF;color:#4C1D95;border:1px solid #E9D5FF}.notice p{margin:5px 0 0;color:#4C1D95}.section{padding-top:3px;border-top:1px solid #F1F5F9}footer{text-align:center;padding:24px;background:var(--navy);color:#fff}
+        @media(max-width:640px){nav{align-items:flex-start}nav div:last-child{display:flex;flex-wrap:wrap;gap:8px}nav a{margin-inline-start:0}.paper{padding:22px 18px}}
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <nav>
-            <div class="logo">💎 ProAssets</div>
-            <div>
-                <a href="/">Home</a>
-                <a href="/products">Products</a>
-                <a href="/about">About</a>
-            </div>
-        </nav>
-    </header>
+    <script src="{{ url_for('static', filename='js/site-i18n.js') }}" defer></script>
+    <header><nav aria-label="Primary navigation"><div class="brand-lockup">{% include 'partials/brand_logo.html' %}</div><div><a href="/">Home</a><a href="/products">Products</a><a href="/about">About</a><a href="/contact">Contact</a></div></nav></header>
+    <main>
+        <article class="paper">
+            <h1 data-lang-en="Privacy Policy" data-lang-ar="سياسة الخصوصية">Privacy Policy</h1>
+            <p class="updated" data-lang-en="Last updated: October 7, 2026" data-lang-ar="آخر تحديث: 7 أكتوبر 2026">Last updated: October 7, 2026</p>
 
-    <div class="container">
-        <!-- Page Header -->
-        <div class="page-header">
-            <h1>Privacy Policy</h1>
-            <p>Last updated: January 2024</p>
-        </div>
+            <aside class="notice">
+                <strong data-lang-en="Important platform note" data-lang-ar="تنويه مهم عن المنصة">Important platform note</strong>
+                <p data-lang-en="This policy describes the current ProAssets application. Confirm the legal entity, jurisdiction, contact details, and any hosting-provider terms before public launch; this page is not legal advice." data-lang-ar="تصف هذه السياسة التطبيق الحالي لمنصة ProAssets. قبل الإطلاق العام، أضف بيانات الكيان القانوني والاختصاص القضائي ووسائل التواصل وشروط مزود الاستضافة؛ هذه الصفحة ليست استشارة قانونية.">This policy describes the current ProAssets application. Confirm the legal entity, jurisdiction, contact details, and any hosting-provider terms before public launch; this page is not legal advice.</p>
+            </aside>
 
-        <!-- Content -->
-        <div class="content">
-            <div class="highlight">
-                <strong>Summary:</strong> We take your privacy seriously. We collect only 
-                necessary information to provide our services and never share your data without 
-                your consent.
-            </div>
+            <section class="section">
+                <h2 data-lang-en="1. Information handled by the platform" data-lang-ar="1. المعلومات التي تتعامل معها المنصة">1. Information handled by the platform</h2>
+                <p data-lang-en="Depending on how you use the service, ProAssets stores account details such as username, email address, and optional profile information; product listings and uploaded files; cart and purchase-request records; order status and administrator-entered transaction references; and messages you submit through the contact form." data-lang-ar="بحسب طريقة استخدامك للخدمة، تخزن ProAssets بيانات الحساب مثل اسم المستخدم والبريد الإلكتروني ومعلومات الملف الاختيارية؛ وقوائم المنتجات والملفات المرفوعة؛ وسجلات السلة وطلبات الشراء؛ وحالة الطلب ومراجع المعاملات التي يدخلها المشرف؛ والرسائل المرسلة عبر نموذج التواصل.">Depending on how you use the service, ProAssets stores account details such as username, email address, and optional profile information; product listings and uploaded files; cart and purchase-request records; order status and administrator-entered transaction references; and messages you submit through the contact form.</p>
+                <p data-lang-en="Passwords are stored as one-way password hashes rather than readable passwords. The hosting provider may process technical request data (for example, IP address, browser, and access logs) under its own terms." data-lang-ar="تُخزن كلمات المرور على شكل تجزئات أحادية الاتجاه، لا كنصوص مقروءة. وقد يعالج مزود الاستضافة بيانات تقنية عن الطلبات، مثل عنوان IP والمتصفح وسجلات الوصول، وفق شروطه الخاصة.">Passwords are stored as one-way password hashes rather than readable passwords. The hosting provider may process technical request data (for example, IP address, browser, and access logs) under its own terms.</p>
+            </section>
 
-            <h2>1. Introduction</h2>
-            <p>
-                ProAssets ("we", "our", or "us") operates the ProAssets platform. This page 
-                informs you of our policies regarding the collection, use, and disclosure of 
-                personal data when you use our service.
-            </p>
+            <section class="section">
+                <h2 data-lang-en="2. Manual payments" data-lang-ar="2. المدفوعات اليدوية">2. Manual payments</h2>
+                <p data-lang-en="This version does not collect card numbers, CVV codes, or PayPal credentials and does not automatically charge a payment method. Paid checkout creates a pending request; payment is arranged outside the app with support, and an administrator may record a payment reference when confirming receipt. Do not send card or banking credentials through the website or contact form." data-lang-ar="لا يجمع هذا الإصدار أرقام البطاقات أو رموز CVV أو بيانات PayPal، ولا يخصم أي مبلغ آلياً. ينشئ إتمام الطلب المدفوع طلباً معلقاً؛ ويُرتب الدفع خارج التطبيق مع الدعم، وقد يسجل المشرف مرجعاً للدفع عند تأكيد الاستلام. لا ترسل بيانات البطاقة أو الحساب البنكي عبر الموقع أو نموذج التواصل.">This version does not collect card numbers, CVV codes, or PayPal credentials and does not automatically charge a payment method. Paid checkout creates a pending request; payment is arranged outside the app with support, and an administrator may record a payment reference when confirming receipt. Do not send card or banking credentials through the website or contact form.</p>
+            </section>
 
-            <h2>2. Information Collection</h2>
-            <h3>Personal Information</h3>
-            <p>We collect the following personal information:</p>
-            <ul>
-                <li>Name and email address</li>
-                <li>Account username and password (hashed)</li>
-                <li>Payment information (processed securely)</li>
-                <li>Profile information (optional)</li>
-                <li>Usage data and analytics</li>
-            </ul>
+            <section class="section">
+                <h2 data-lang-en="3. How information is used" data-lang-ar="3. كيفية استخدام المعلومات">3. How information is used</h2>
+                <p data-lang-en="Information is used to operate accounts and creator listings, respond to messages, manage purchase requests, provide access to completed purchases, protect the service, and meet applicable legal obligations. The current application does not send marketing email or run an in-app advertising tracker." data-lang-ar="تُستخدم المعلومات لإدارة الحسابات وقوائم المنشئين، والرد على الرسائل، ومتابعة طلبات الشراء، وإتاحة المشتريات المكتملة، وحماية الخدمة، والوفاء بالالتزامات القانونية المعمول بها. لا يرسل التطبيق الحالي رسائل تسويقية ولا يشغّل أداة تتبع إعلانية داخله.">Information is used to operate accounts and creator listings, respond to messages, manage purchase requests, provide access to completed purchases, protect the service, and meet applicable legal obligations. The current application does not send marketing email or run an in-app advertising tracker.</p>
+            </section>
 
-            <h3>Automatic Information</h3>
-            <p>We automatically collect:</p>
-            <ul>
-                <li>IP address and browser type</li>
-                <li>Pages visited and time spent</li>
-                <li>Device information</li>
-                <li>Referrer data</li>
-            </ul>
+            <section class="section">
+                <h2 data-lang-en="4. Sharing and storage" data-lang-ar="4. مشاركة المعلومات وتخزينها">4. Sharing and storage</h2>
+                <p data-lang-en="Public product pages display the information a creator chooses to publish. Data is stored in the application database and private upload storage configured by the operator. Hosting and storage providers may process data to deliver the service. ProAssets does not sell personal information. Information may be disclosed where required by law or to protect the service and its users." data-lang-ar="تعرض صفحات المنتجات العامة المعلومات التي يختار المنشئ نشرها. تُخزن البيانات في قاعدة بيانات التطبيق ومخزن الملفات الخاص الذي يحدده المشغّل. وقد يعالج مزودو الاستضافة والتخزين البيانات لتقديم الخدمة. لا تبيع ProAssets المعلومات الشخصية. وقد يُفصح عن المعلومات إذا أوجب القانون ذلك أو لحماية الخدمة ومستخدميها.">Public product pages display the information a creator chooses to publish. Data is stored in the application database and private upload storage configured by the operator. Hosting and storage providers may process data to deliver the service. ProAssets does not sell personal information. Information may be disclosed where required by law or to protect the service and its users.</p>
+            </section>
 
-            <h2>3. How We Use Your Information</h2>
-            <p>We use the collected information for:</p>
-            <ul>
-                <li>Providing and maintaining our service</li>
-                <li>Processing transactions and sending related information</li>
-                <li>Sending promotional emails (with your consent)</li>
-                <li>Improving and personalizing the service</li>
-                <li>Detecting and preventing fraud</li>
-                <li>Complying with legal obligations</li>
-            </ul>
+            <section class="section">
+                <h2 data-lang-en="5. Cookies and local storage" data-lang-ar="5. ملفات تعريف الارتباط والتخزين المحلي">5. Cookies and local storage</h2>
+                <p data-lang-en="The site uses a session cookie to maintain sign-in state. The language preference is saved in your browser's local storage. You can clear these through your browser settings; clearing the session cookie signs you out." data-lang-ar="يستخدم الموقع ملف جلسة للحفاظ على حالة تسجيل الدخول، ويحفظ تفضيل اللغة في التخزين المحلي للمتصفح. يمكنك مسحها من إعدادات المتصفح؛ ومسح ملف الجلسة يؤدي إلى تسجيل خروجك.">The site uses a session cookie to maintain sign-in state. The language preference is saved in your browser's local storage. You can clear these through your browser settings; clearing the session cookie signs you out.</p>
+            </section>
 
-            <h2>4. Data Security</h2>
-            <p>
-                We implement industry-standard security measures to protect your personal 
-                information:
-            </p>
-            <ul>
-                <li>SSL/TLS encryption for data transmission</li>
-                <li>Password hashing with Werkzeug</li>
-                <li>Regular security audits</li>
-                <li>Secure database connections</li>
-                <li>Limited access to sensitive data</li>
-            </ul>
+            <section class="section">
+                <h2 data-lang-en="6. Retention and your choices" data-lang-ar="6. الاحتفاظ بالبيانات وخياراتك">6. Retention and your choices</h2>
+                <p data-lang-en="Account, product, and order records are retained as needed to operate the marketplace and meet legal or accounting obligations. To ask a question or request correction or deletion, contact the platform operator through the contact page. Some transaction records may need to be retained where required by law." data-lang-ar="تُحتفظ بسجلات الحسابات والمنتجات والطلبات بالقدر اللازم لتشغيل السوق والوفاء بالالتزامات القانونية أو المحاسبية. للاستفسار أو طلب تصحيح البيانات أو حذفها، تواصل مع مشغّل المنصة عبر صفحة التواصل. وقد يلزم الاحتفاظ ببعض سجلات المعاملات إذا أوجب القانون ذلك.">Account, product, and order records are retained as needed to operate the marketplace and meet legal or accounting obligations. To ask a question or request correction or deletion, contact the platform operator through the contact page. Some transaction records may need to be retained where required by law.</p>
+            </section>
 
-            <h2>5. Data Retention</h2>
-            <p>
-                We retain your personal information for as long as necessary to provide our 
-                services and comply with legal obligations. You can request deletion of your 
-                account at any time.
-            </p>
-
-            <h2>6. Your Rights</h2>
-            <p>You have the right to:</p>
-            <ul>
-                <li>Access your personal data</li>
-                <li>Correct inaccurate data</li>
-                <li>Request deletion of your data</li>
-                <li>Opt-out of marketing communications</li>
-                <li>Data portability</li>
-            </ul>
-
-            <h2>7. Third-Party Services</h2>
-            <p>
-                We may use third-party services for payments, storage, and analytics. These 
-                services have their own privacy policies. We encourage you to review them.
-            </p>
-
-            <h2>8. Cookies</h2>
-            <p>
-                We use cookies to enhance your experience. You can control cookies through 
-                your browser settings.
-            </p>
-
-            <h2>9. Changes to This Policy</h2>
-            <p>
-                We may update this privacy policy from time to time. We will notify you of 
-                significant changes by email or through our platform.
-            </p>
-
-            <h2>10. Contact Us</h2>
-            <p>
-                If you have questions about this privacy policy, please contact us at:
-            </p>
-            <p>
-                <strong>Email:</strong> privacy@proassets.com<br>
-                <strong>Website:</strong> proassets.com
-            </p>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2024 ProAssets. All rights reserved.</p>
-    </footer>
+            <section class="section">
+                <h2 data-lang-en="7. Contact" data-lang-ar="7. التواصل">7. Contact</h2>
+                <p><span data-lang-en="For privacy questions, use the" data-lang-ar="للاستفسارات المتعلقة بالخصوصية، استخدم">For privacy questions, use the</span> <a href="{{ url_for('contact') }}" data-lang-en="contact page" data-lang-ar="صفحة التواصل">contact page</a><span data-lang-en=". The operator should publish a monitored privacy contact before launch." data-lang-ar=". وينبغي لمشغّل المنصة نشر وسيلة تواصل فعّالة للخصوصية قبل الإطلاق.">. The operator should publish a monitored privacy contact before launch.</span></p>
+            </section>
+        </article>
+    </main>
+    <footer><p>&copy; 2026 ProAssets. <span data-lang-en="All rights reserved." data-lang-ar="جميع الحقوق محفوظة.">All rights reserved.</span></p></footer>
 </body>
 </html>

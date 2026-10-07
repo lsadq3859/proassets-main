@@ -6,6 +6,7 @@ __pycache__/
 .Python
 env/
 venv/
+.venv/
 ENV/
 *.egg-info/
 dist/
@@ -31,8 +32,9 @@ instance/
 *~
 .DS_Store
 
-# Uploads
+# Uploaded/private user content (local or Render-mounted storage)
 uploads/
+private_storage/
 *.pdf
 *.epub
 *.docx

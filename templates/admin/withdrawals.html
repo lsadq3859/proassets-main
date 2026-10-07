@@ -88,6 +88,8 @@
             font-weight: bold;
             margin-bottom: 0.5rem;
         }
+        .currency-breakdown { font-size:1rem; line-height:1.4; overflow-wrap:anywhere; }
+        .currency-breakdown span { display:block; }
         
         .stat-label {
             color: #666;
@@ -116,8 +118,10 @@
             background: white;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
+        .withdrawals-table table { min-width: 820px; }
         
         table {
             width: 100%;
@@ -327,21 +331,24 @@
             margin-top: 4rem;
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/brand.css') }}">
 </head>
 <body>
+    <script src="{{ url_for('static', filename='js/site-i18n.js') }}" defer></script>
     <!-- Header -->
     <header>
         <nav>
-            <div class="logo">💎 ProAssets Admin</div>
+            <div class="logo">{% include 'partials/brand_logo.html' %}<span class="brand-lockup__suffix">Admin</span></div>
             <ul>
                 <li><a href="/admin">Dashboard</a></li>
+                <li><a href="/admin/orders">Orders</a></li>
                 <li><a href="/admin/products">Products</a></li>
                 <li><a href="/admin/users">Users</a></li>
                 <li><a href="/admin/withdrawals">Withdrawals</a></li>
             </ul>
             <ul>
                 <li><a href="/">Home</a></li>
-                <li><a href="/logout">Logout</a></li>
+                <li><form method="post" action="{{ url_for('logout') }}" style="display:inline"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit" style="color:inherit;background:none;border:0;font:inherit;cursor:pointer;padding:0;text-decoration:none">Logout</button></form></li>
             </ul>
         </nav>
     </header>
@@ -350,7 +357,10 @@
         <!-- Page Header -->
         <div class="page-header">
             <h1>💳 Withdrawal Management</h1>
-            <p style="color: #666;">Process and manage creator withdrawal requests</p>
+            <p style="color: #666;">Creator withdrawal requests are read-only while payout processing is disabled.</p>
+        </div>
+        <div class="page-header" style="border-left:5px solid #F59E0B;background:#FFFBEB;color:#92400E" data-lang-en="Payouts are disabled in this version. Do not treat wallet balances as paid funds; no approve, reject, or transfer action is available here." data-lang-ar="الصرف متوقف في هذا الإصدار. لا تعتبر أرصدة المحافظ أموالاً مدفوعة؛ ولا تتوفر هنا إجراءات موافقة أو رفض أو تحويل.">
+            Payouts are disabled in this version. Do not treat wallet balances as paid funds; no approve, reject, or transfer action is available here.
         </div>
 
         <!-- Stats -->
@@ -364,8 +374,8 @@
                 <div class="stat-label">Pending</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">${{ withdrawals|selectattr('status', 'equalto', 'completed')|map(attribute='amount')|sum }}</div>
-                <div class="stat-label">Total Processed</div>
+                <div class="stat-number currency-breakdown">{% if processed_by_currency %}{% for total in processed_by_currency %}<span><bdi dir="ltr">{{ total.currency }} {{ '%.2f'|format(total.total) }}</bdi></span>{% endfor %}{% else %}<span><bdi dir="ltr">USD 0.00</bdi></span>{% endif %}</div>
+                <div class="stat-label">Processed amount by currency</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number">{{ withdrawals|selectattr('status', 'equalto', 'processing')|list|length }}</div>
@@ -406,16 +416,16 @@
                 </thead>
                 <tbody>
                     {% for withdrawal in withdrawals %}
-                    <tr data-status="{{ withdrawal.status }}" data-method="{{ withdrawal.withdrawal_method }}">
+                    <tr id="withdrawal-{{ withdrawal.id }}" data-status="{{ withdrawal.status }}" data-method="{{ withdrawal.withdrawal_method or '' }}" data-creator="{{ withdrawal.username }}" data-amount="{{ '%.2f'|format(withdrawal.amount) }}" data-currency="{{ withdrawal.currency or 'USD' }}" data-method-label="{{ (withdrawal.withdrawal_method or 'Manual').replace('_', ' ').title() }}">
                         <td>
-                            <a href="/admin/user/{{ withdrawal.creator_id }}" class="creator-link">
+                            <a href="/admin/users" class="creator-link">
                                 {{ withdrawal.username }}
                             </a>
                         </td>
-                        <td class="amount">${{ withdrawal.amount }}</td>
+                        <td class="amount"><bdi dir="ltr">{{ withdrawal.currency or 'USD' }} {{ '%.2f'|format(withdrawal.amount) }}</bdi></td>
                         <td>
                             <span class="method-badge">
-                                {{ withdrawal.withdrawal_method.replace('_', ' ').title() }}
+                                {{ (withdrawal.withdrawal_method or 'Manual').replace('_', ' ').title() }}
                             </span>
                         </td>
                         <td>
@@ -426,17 +436,7 @@
                         <td>{{ withdrawal.created_at }}</td>
                         <td>
                             <div class="action-buttons">
-                                <button class="action-btn btn-view" onclick="viewWithdrawal({{ withdrawal.id }})">
-                                    View
-                                </button>
-                                {% if withdrawal.status == 'pending' %}
-                                <button class="action-btn btn-approve" onclick="approveWithdrawal({{ withdrawal.id }})">
-                                    ✓ Approve
-                                </button>
-                                <button class="action-btn btn-reject" onclick="rejectWithdrawal({{ withdrawal.id }})">
-                                    ✗ Reject
-                                </button>
-                                {% endif %}
+                                <button class="action-btn btn-view" type="button" onclick="viewWithdrawal({{ withdrawal.id }})">View details</button>
                             </div>
                         </td>
                     </tr>
@@ -463,7 +463,7 @@
                 </div>
                 <div class="info-row">
                     <span>Amount:</span>
-                    <strong id="modalAmount"></strong>
+                    <strong id="modalAmount" dir="ltr"></strong>
                 </div>
                 <div class="info-row">
                     <span>Method:</span>
@@ -482,7 +482,7 @@
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2024 ProAssets. All rights reserved. | Admin Panel</p>
+        <p>&copy; 2026 ProAssets. All rights reserved. | Admin Panel</p>
     </footer>
 
     <script>
@@ -504,27 +504,17 @@
         }
 
         function viewWithdrawal(withdrawalId) {
-            document.getElementById('modalCreator').textContent = 'Creator Name';
-            document.getElementById('modalAmount').textContent = '$500.00';
-            document.getElementById('modalMethod').textContent = 'Bank Transfer';
-            document.getElementById('modalStatus').textContent = 'Pending';
+            const row = document.getElementById(`withdrawal-${withdrawalId}`);
+            if (!row) return;
+            document.getElementById('modalCreator').textContent = row.dataset.creator || '';
+            document.getElementById('modalAmount').textContent = `${row.dataset.currency || 'USD'} ${row.dataset.amount || '0.00'}`;
+            document.getElementById('modalMethod').textContent = row.dataset.methodLabel || 'Manual';
+            document.getElementById('modalStatus').textContent = row.dataset.status || '';
             document.getElementById('detailsModal').style.display = 'block';
         }
 
         function closeModal() {
             document.getElementById('detailsModal').style.display = 'none';
-        }
-
-        function approveWithdrawal(withdrawalId) {
-            if (confirm('Approve this withdrawal request?')) {
-                alert('✅ Withdrawal approved! (Feature coming soon)');
-            }
-        }
-
-        function rejectWithdrawal(withdrawalId) {
-            if (confirm('Reject this withdrawal request?')) {
-                alert('❌ Withdrawal rejected! (Feature coming soon)');
-            }
         }
 
         // Close modal when clicking outside

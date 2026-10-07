@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/brand.css') }}">
+    <style>
+        *{box-sizing:border-box}body{margin:0;background:#F1F5F9;color:#1F2937;font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}header{background:linear-gradient(120deg,#7C3AED,#5B21B6);color:#fff}nav{max-width:1100px;margin:auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}nav a{color:#fff;text-decoration:none;font-weight:650}.links{display:flex;gap:16px;align-items:center;flex-wrap:wrap}main{max-width:900px;margin:26px auto;padding:0 16px 50px}.panel{background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:clamp(18px,4vw,32px);box-shadow:0 10px 30px rgba(15,23,42,.06)}h1{margin:0;color:#0F172A;font-size:clamp(1.5rem,4vw,2rem)}.muted{color:#64748B}.notice{padding:12px 14px;border-radius:9px;margin:16px 0}.notice.error{color:#991B1B;background:#FEE2E2}.notice.success{color:#166534;background:#DCFCE7}.notice.info{color:#5B21B6;background:#F3E8FF}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field{margin:16px 0}.field label{display:block;font-weight:700;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;border:1px solid #CBD5E1;border-radius:9px;padding:11px 12px;font:inherit;background:#fff;color:inherit}.field textarea{min-height:130px;resize:vertical}.field input:focus,.field textarea:focus,.field select:focus{outline:3px solid #DDD6FE;border-color:#7C3AED}.hint{font-size:.88rem;color:#64748B}.status{display:inline-block;border-radius:999px;padding:4px 10px;background:#FEF3C7;color:#92400E;font-weight:750}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.btn{display:inline-flex;justify-content:center;align-items:center;text-decoration:none;border:0;border-radius:9px;padding:11px 16px;background:#7C3AED;color:#fff;font:inherit;font-weight:750;cursor:pointer}.btn.secondary{background:#fff;color:#6D28D9;border:1px solid #C4B5FD}.btn:hover{filter:brightness(.96)}
+        @media(max-width:640px){.grid{grid-template-columns:1fr}.links{gap:10px}nav{align-items:flex-start}.btn{flex:1}}
+    </style>
+</head>
+<body>
+<script src="{{ url_for('static', filename='js/site-i18n.js') }}" defer></script>
+<header><nav aria-label="Creator navigation">
+    <div class="brand-lockup">{% include 'partials/brand_logo.html' %}<span class="brand-lockup__suffix">Creator</span></div>
+    <div class="links"><a href="{{ url_for('creator_dashboard') }}">Dashboard</a><a href="{{ url_for('creator_products') }}">My Products</a><a href="{{ url_for('creator_earnings') }}">Earnings</a><a href="{{ url_for('account_settings') }}">Account</a></div>
+</nav></header>
+<main>
+<section class="panel">
+    <h1>Edit product listing</h1>
+    <p class="muted">Update the bilingual listing details and price. The uploaded product file is unchanged.</p>
+    {% if error %}<div class="notice error" role="alert">{{ error }}</div>{% endif %}
+    {% if updated %}<div class="notice success" role="status">Listing saved. If it was published or rejected, the revised listing is now pending administrator review.</div>{% endif %}
+    <div class="notice info">Current status: <span class="status">{{ product.status }}</span>. Published or rejected listings return to review after edits; existing buyers retain authorized downloads.</div>
+    <form method="post" action="{{ url_for('edit_creator_product', product_id=product.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="grid">
+            <div class="field"><label for="title_en">Product name (English) *</label><input id="title_en" name="title_en" maxlength="140" required value="{{ product.title_en }}"></div>
+            <div class="field"><label for="title_ar">اسم المنتج (بالعربية) *</label><input id="title_ar" name="title_ar" maxlength="140" dir="rtl" lang="ar" required value="{{ product.title_ar }}"></div>
+        </div>
+        <div class="grid">
+            <div class="field"><label for="description_en">Description (English)</label><textarea id="description_en" name="description_en" maxlength="3000">{{ product.description_en or '' }}</textarea><div class="hint">Maximum 3,000 characters.</div></div>
+            <div class="field"><label for="description_ar">الوصف (بالعربية)</label><textarea id="description_ar" name="description_ar" maxlength="3000" dir="rtl" lang="ar">{{ product.description_ar or '' }}</textarea><div class="hint">الحد الأقصى ٣٠٠٠ حرف.</div></div>
+        </div>
+        <div class="grid">
+            <div class="field"><label for="category_id">Category</label><select id="category_id" name="category_id" required>
+                {% for category in categories %}<option value="{{ category.id }}" data-lang-en="{{ category.name_en }}" data-lang-ar="{{ category.name_ar or category.name_en }}" {% if product.category_id == category.id %}selected{% endif %}>{{ category.name_en }}</option>{% endfor %}
+            </select></div>
+            <div class="field"><label for="product_type">Product type</label><select id="product_type" name="product_type" required>
+                {% for value,label in [('ebook','Ebook'),('template','Template'),('design','Design'),('software','Software'),('course','Course'),('other','Other')] %}<option value="{{ value }}" {% if product.product_type == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+            </select></div>
+        </div>
+        <div class="field"><label for="price">Price (USD) *</label><input id="price" name="price" type="number" min="0" max="999999" step="0.01" required value="{{ '%.2f'|format(product.price) }}"><div class="hint">Paid purchases continue to use the price saved on each order. Free products are delivered immediately.</div></div>
+        <div class="actions"><button class="btn" type="submit">Save listing</button><a class="btn secondary" href="{{ url_for('creator_products') }}">Cancel</a></div>
+    </form>
+</section>
+</main>
+</body>
+</html>

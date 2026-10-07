@@ -1,55 +1,90 @@
 <!doctype html>
-<html lang="{{ current_lang }}" dir="{{ 'rtl' if is_arabic else 'ltr' }}">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ title }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/brand.css') }}">
     <style>
-        .manual-checkout { max-width: 680px; margin: 4rem auto; padding: 2rem; background: #fff; border-radius: 14px; box-shadow: 0 2px 14px rgba(0,0,0,.08); text-align: center; }
-        .contact-icons { display: flex; justify-content: center; gap: 1rem; margin: 1.5rem 0; }
-        .contact-icons a { display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: 50%; background: #f0e8ff; color: #6d28d9; text-decoration: none; font-size: 1.5rem; }
-        .checkout-actions { display: flex; gap: .8rem; justify-content: center; flex-wrap: wrap; }
-        .checkout-actions button, .checkout-actions a { border: 0; cursor: pointer; padding: .8rem 1.2rem; border-radius: 7px; text-decoration: none; }
-        .primary { background: #7c3aed; color: #fff; }
-        .secondary { background: #eee; color: #333; }
-        #result { margin-top: 1rem; font-weight: 600; }
+        :root{--purple:#7C3AED;--navy:#0F172A;--muted:#64748B;--line:#E2E8F0}
+        *{box-sizing:border-box}body{margin:0;background:#F1F5F9;color:#1F2937;font:16px/1.65 system-ui,sans-serif}
+        .manual-checkout{max-width:760px;margin:42px auto;padding:clamp(20px,5vw,38px);background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 12px 36px #0f172a0d}
+        h1{margin:0;color:var(--navy);font-size:clamp(1.6rem,4vw,2.1rem)}.intro{color:var(--muted);margin:8px 0 22px}
+        .items{display:grid;gap:10px;margin:18px 0}.item{display:flex;justify-content:space-between;gap:14px;padding:13px 14px;border:1px solid var(--line);border-radius:11px}.item-title{font-weight:700}.item-price{white-space:nowrap;color:#6D28D9;font-weight:750}.total{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:14px;font-weight:800}
+        .info{margin:20px 0;padding:14px 16px;border-radius:12px;background:#F3E8FF;color:#4C1D95}.contact-icons{display:flex;justify-content:center;gap:12px;margin:18px 0}.contact-icons a{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:#F3E8FF;color:#6D28D9;text-decoration:none;font-size:1.35rem}
+        .checkout-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.checkout-actions button,.checkout-actions a{border:0;cursor:pointer;padding:11px 17px;border-radius:9px;text-decoration:none;font:inherit;font-weight:700}.primary{background:#7C3AED;color:#fff}.secondary{background:#E2E8F0;color:#1F2937}.primary:disabled{opacity:.55;cursor:not-allowed}#result{min-height:1.5em;margin-top:15px;text-align:center;font-weight:650}
+        @media(max-width:560px){.manual-checkout{margin:16px 12px}.item{align-items:flex-start}}
     </style>
 </head>
 <body>
-<main class="manual-checkout">
-    <p><a href="/language/{{ 'en' if is_arabic else 'ar' }}">{{ 'English' if is_arabic else 'العربية' }}</a></p>
-    <h1>طلب شراء يدوي</h1>
-    <p>لا يتم تحصيل أي مبلغ تلقائيًا. اضغط إرسال الطلب لإنشاء طلب معلّق، ثم تواصل معنا عبر الأيقونات لإتمام الدفع يدويًا.</p>
-    <div class="contact-icons" aria-label="خيارات التواصل">
-        {% if contact_phone %}<a href="tel:{{ contact_phone }}" title="اتصال" aria-label="اتصال">☎</a>{% endif %}
-        {% if contact_phone %}<a href="https://wa.me/{{ contact_phone|replace('+','')|replace(' ','')|replace('-','')|replace('(','')|replace(')','') }}" target="_blank" rel="noopener" title="واتساب" aria-label="واتساب">◉</a>{% endif %}
-        {% if contact_email %}<a href="mailto:{{ contact_email }}" title="بريد إلكتروني" aria-label="بريد إلكتروني">✉</a>{% endif %}
-    </div>
-    <div class="checkout-actions">
-        <button class="primary" id="submitOrder">إرسال طلب الشراء</button>
-        <a class="secondary" href="/cart">العودة إلى السلة</a>
-    </div>
-    <div id="result" role="status"></div>
-</main>
-<script>
-document.getElementById('submitOrder').addEventListener('click', async () => {
-    const result = document.getElementById('result');
-    const button = document.getElementById('submitOrder');
-    button.disabled = true;
-    try {
-        const response = await fetch('/checkout', {method: 'POST', headers: {'Content-Type': 'application/json'}});
-        const data = await response.json();
-        result.textContent = data.message || 'تم إرسال الطلب';
-        result.style.color = response.ok ? '#15803d' : '#b91c1c';
-        if (response.ok) button.textContent = 'تم إرسال الطلب';
-        else button.disabled = false;
-    } catch (error) {
-        result.textContent = 'تعذر إرسال الطلب. حاول مرة أخرى.';
-        result.style.color = '#b91c1c';
-        button.disabled = false;
-    }
-});
-</script>
+    <script src="{{ url_for('static', filename='js/site-i18n.js') }}" defer></script>
+    <main class="manual-checkout">
+        <h1 data-lang-en="Review your order" data-lang-ar="مراجعة طلبك">مراجعة طلبك</h1>
+        <p class="intro" data-lang-en="No payment is collected automatically. Paid items create a pending request; free items are added to your library when submitted." data-lang-ar="لا يتم تحصيل أي مبلغ تلقائياً. تنشئ المنتجات المدفوعة طلباً معلقاً؛ وتضاف المنتجات المجانية إلى مكتبتك عند الإرسال.">لا يتم تحصيل أي مبلغ تلقائياً. تنشئ المنتجات المدفوعة طلباً معلقاً؛ وتضاف المنتجات المجانية إلى مكتبتك عند الإرسال.</p>
+
+        {% if products %}
+        <div class="items" aria-label="Order items">
+            {% for product in products %}
+            <div class="item">
+                <span class="item-title" data-lang-en="{{ product.title_en }}" data-lang-ar="{{ product.title_ar or product.title_en }}">{{ product.title_ar or product.title_en }}</span>
+                <span class="item-price"><bdi dir="ltr">{{ product.currency or 'USD' }} {{ '%.2f'|format(product.price) }}</bdi></span>
+            </div>
+            {% endfor %}
+        </div>
+        {% if total_price is not none %}
+        <div class="total"><span data-lang-en="Total" data-lang-ar="الإجمالي">الإجمالي</span><span><bdi dir="ltr">{{ total_currency }} {{ '%.2f'|format(total_price) }}</bdi></span></div>
+        {% endif %}
+
+        {% if has_paid_items %}
+        {% if contact_phone or contact_email %}
+        <div class="info" data-lang-en="After submitting, contact support using one of the options below to arrange payment. An administrator will verify receipt before the paid product is unlocked." data-lang-ar="بعد الإرسال، تواصل مع الدعم عبر أحد الخيارات أدناه لترتيب الدفع. سيتحقق المشرف من الاستلام قبل إتاحة المنتج المدفوع.">بعد الإرسال، تواصل مع الدعم عبر أحد الخيارات أدناه لترتيب الدفع. سيتحقق المشرف من الاستلام قبل إتاحة المنتج المدفوع.</div>
+        <div class="contact-icons" aria-label="Contact support">
+            {% if contact_phone %}<a href="tel:{{ contact_phone }}" title="Call" aria-label="Call">☎</a>{% endif %}
+            {% if contact_phone %}<a href="https://wa.me/{{ contact_phone|replace('+','')|replace(' ','')|replace('-','')|replace('(','')|replace(')','') }}" target="_blank" rel="noopener" title="WhatsApp" aria-label="WhatsApp">◉</a>{% endif %}
+            {% if contact_email %}<a href="mailto:{{ contact_email }}" title="Email" aria-label="Email">✉</a>{% endif %}
+        </div>
+        {% else %}
+        <div class="info" data-lang-en="Paid orders are unavailable because this deployment has no configured support contact. The order will not be submitted; contact the platform operator." data-lang-ar="الطلبات المدفوعة غير متاحة لعدم إعداد وسيلة تواصل مع الدعم في هذا النشر. لن يُرسل الطلب؛ يرجى التواصل مع مشغّل المنصة.">Paid orders are unavailable because this deployment has no configured support contact. The order will not be submitted; contact the platform operator.</div>
+        {% endif %}
+        {% else %}
+        <div class="info" data-lang-en="These items are free. Submitting adds them directly to your library; no manual payment is needed." data-lang-ar="هذه المنتجات مجانية. يؤدي الإرسال إلى إضافتها مباشرة إلى مكتبتك، ولا حاجة إلى دفع يدوي.">هذه المنتجات مجانية. يؤدي الإرسال إلى إضافتها مباشرة إلى مكتبتك، ولا حاجة إلى دفع يدوي.</div>
+        {% endif %}
+        {% else %}
+        <div class="info" data-lang-en="Your cart has no available products. Return to the marketplace and add a product first." data-lang-ar="لا توجد منتجات متاحة في سلتك. عُد إلى السوق وأضف منتجاً أولاً.">لا توجد منتجات متاحة في سلتك. عُد إلى السوق وأضف منتجاً أولاً.</div>
+        {% endif %}
+
+        <div class="checkout-actions">
+            <button class="primary" id="submitOrder" type="button" {% if not products or (has_paid_items and not contact_phone and not contact_email) %}disabled{% endif %} data-lang-en="Submit order" data-lang-ar="إرسال الطلب">إرسال الطلب</button>
+            <a class="secondary" href="{{ url_for('cart') }}" data-lang-en="Return to cart" data-lang-ar="العودة إلى السلة">العودة إلى السلة</a>
+        </div>
+        <div id="result" role="status" aria-live="polite"></div>
+    </main>
+    <script>
+        const submitButton = document.getElementById('submitOrder');
+        submitButton.addEventListener('click', async () => {
+            const result = document.getElementById('result');
+            submitButton.disabled = true;
+            try {
+                const response = await fetch('{{ url_for("checkout") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({})
+                });
+                const data = await response.json();
+                result.textContent = data.message || 'Order submitted.';
+                result.style.color = response.ok ? '#15803d' : '#b91c1c';
+                if (response.ok) submitButton.textContent = '✓';
+                else submitButton.disabled = false;
+            } catch (_) {
+                result.textContent = 'Unable to submit the order. Please try again.';
+                result.style.color = '#b91c1c';
+                submitButton.disabled = false;
+            }
+        });
+    </script>
 </body>
 </html>

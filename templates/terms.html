@@ -1,1 +1,62 @@
-<!doctype html><html lang="en" dir="ltr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{{ title }}</title><link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"></head><body><main class="container"><h1>Terms of Service</h1><p>Use of ProAssets is subject to applicable laws and the licenses attached to each digital product.</p><h2>Digital products</h2><p>Customers may use purchased products only according to the seller's license. Redistribution or unauthorized sharing is prohibited.</p><h2>Accounts</h2><p>Keep your credentials secure and provide accurate information.</p><p><a href="/">Back to home</a></p></main></body></html>
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/brand.css') }}">
+    <style>
+        :root{--purple:#7C3AED;--navy:#0F172A;--ink:#1F2937;--muted:#64748B;--line:#E2E8F0;--page:#F1F5F9}
+        *{box-sizing:border-box}body{margin:0;background:var(--page);color:var(--ink);font:16px/1.75 system-ui,-apple-system,"Segoe UI",sans-serif}
+        header{background:linear-gradient(120deg,var(--purple),#5B21B6);color:#fff}nav{max-width:1080px;margin:auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}nav a{color:#fff;text-decoration:none;font-weight:650;margin-inline-start:16px}
+        main{max-width:900px;margin:34px auto;padding:0 18px 50px}.paper{background:#fff;border:1px solid var(--line);border-radius:18px;padding:clamp(22px,5vw,48px);box-shadow:0 12px 36px #0f172a0c}
+        h1{margin:0;color:var(--navy);font-size:clamp(1.8rem,4vw,2.5rem);line-height:1.2}h2{margin:30px 0 8px;color:#6D28D9;font-size:1.2rem}p{margin:9px 0;color:#475569}.updated{color:var(--muted);font-size:.92rem}.notice{margin:22px 0;padding:16px 18px;border-radius:12px;background:#FFF7ED;color:#9A3412;border:1px solid #FED7AA}.notice p{margin:5px 0 0;color:#7C2D12}.section{padding-top:3px;border-top:1px solid #F1F5F9}footer{text-align:center;padding:24px;background:var(--navy);color:#fff}
+        @media(max-width:640px){nav{align-items:flex-start}nav div:last-child{display:flex;flex-wrap:wrap;gap:8px}nav a{margin-inline-start:0}.paper{padding:22px 18px}}
+    </style>
+</head>
+<body>
+    <script src="{{ url_for('static', filename='js/site-i18n.js') }}" defer></script>
+    <header><nav aria-label="Primary navigation"><div class="brand-lockup">{% include 'partials/brand_logo.html' %}</div><div><a href="/">Home</a><a href="/products">Products</a><a href="/about">About</a><a href="/contact">Contact</a></div></nav></header>
+    <main>
+        <article class="paper">
+            <h1 data-lang-en="Terms of Service" data-lang-ar="شروط الاستخدام">Terms of Service</h1>
+            <p class="updated" data-lang-en="Last updated: October 7, 2026" data-lang-ar="آخر تحديث: 7 أكتوبر 2026">Last updated: October 7, 2026</p>
+            <aside class="notice">
+                <strong data-lang-en="Service status" data-lang-ar="حالة الخدمة">Service status</strong>
+                <p data-lang-en="ProAssets is currently an early-stage marketplace. The operator should add the legal business identity, governing law, and dispute contact before public launch. These terms are a working draft, not legal advice." data-lang-ar="ProAssets سوق رقمي في مرحلة مبكرة. ينبغي لمشغّل المنصة إضافة الهوية القانونية للنشاط والقانون الحاكم ووسيلة التواصل لحل النزاعات قبل الإطلاق العام. هذه الشروط مسودة عمل وليست استشارة قانونية.">ProAssets is currently an early-stage marketplace. The operator should add the legal business identity, governing law, and dispute contact before public launch. These terms are a working draft, not legal advice.</p>
+            </aside>
+
+            <section class="section">
+                <h2 data-lang-en="1. Accounts and acceptable use" data-lang-ar="1. الحسابات والاستخدام المقبول">1. Accounts and acceptable use</h2>
+                <p data-lang-en="Provide accurate account information, keep your password private, and promptly report suspected unauthorized use. Do not use the service to violate the law, infringe another person's rights, distribute harmful files, or interfere with the marketplace." data-lang-ar="قدّم معلومات دقيقة للحساب، وحافظ على سرية كلمة المرور، وأبلغ فوراً عن أي استخدام غير مصرح به تشتبه به. لا تستخدم الخدمة لمخالفة القانون أو انتهاك حقوق الآخرين أو توزيع ملفات ضارة أو تعطيل السوق.">Provide accurate account information, keep your password private, and promptly report suspected unauthorized use. Do not use the service to violate the law, infringe another person's rights, distribute harmful files, or interfere with the marketplace.</p>
+            </section>
+
+            <section class="section">
+                <h2 data-lang-en="2. Digital products and licences" data-lang-ar="2. المنتجات الرقمية والتراخيص">2. Digital products and licences</h2>
+                <p data-lang-en="Creators must have the rights needed to list and sell each product and must describe it accurately. Buyers may use a purchased product only under the licence supplied by its creator. Unless that licence permits it, do not redistribute, resell, or share the product file." data-lang-ar="يجب أن يمتلك المنشئون الحقوق اللازمة لعرض كل منتج وبيعه، وأن يصفوه بدقة. يجوز للمشترين استخدام المنتج وفق الترخيص الذي يقدمه منشئه فقط. ما لم يسمح الترخيص بذلك، لا تعِد توزيع ملف المنتج أو بيعه أو مشاركته.">Creators must have the rights needed to list and sell each product and must describe it accurately. Buyers may use a purchased product only under the licence supplied by its creator. Unless that licence permits it, do not redistribute, resell, or share the product file.</p>
+            </section>
+
+            <section class="section">
+                <h2 data-lang-en="3. Orders and manual payments" data-lang-ar="3. الطلبات والمدفوعات اليدوية">3. Orders and manual payments</h2>
+                <p data-lang-en="This version does not automatically charge cards or PayPal. A paid checkout creates a pending purchase request; payment is arranged manually with support. An administrator must verify receipt before marking an order complete. Only a completed order grants access to the paid product. Free products may be added to the library without a payment request. Do not enter card details into the website." data-lang-ar="لا يخصم هذا الإصدار المدفوعات آلياً عبر البطاقات أو PayPal. ينشئ إتمام الشراء المدفوع طلباً معلقاً؛ ويُرتب الدفع يدوياً مع الدعم. يجب على المشرف التحقق من استلام المبلغ قبل إكمال الطلب. لا يُتاح المنتج المدفوع إلا بعد اكتمال الطلب. يمكن إضافة المنتجات المجانية إلى المكتبة دون طلب دفع. لا تدخل بيانات بطاقتك في الموقع.">This version does not automatically charge cards or PayPal. A paid checkout creates a pending purchase request; payment is arranged manually with support. An administrator must verify receipt before marking an order complete. Only a completed order grants access to the paid product. Free products may be added to the library without a payment request. Do not enter card details into the website.</p>
+            </section>
+
+            <section class="section">
+                <h2 data-lang-en="4. Fees and creator earnings" data-lang-ar="4. الرسوم وأرباح المنشئين">4. Fees and creator earnings</h2>
+                <p data-lang-en="The current application calculates a 20% platform commission and 80% creator share on paid orders. Actual settlement is manual; wallet balances shown in the app are records and are not a promise of automatic withdrawal. Creator withdrawals are not enabled in this version." data-lang-ar="يحسب التطبيق الحالي عمولة للمنصة بنسبة 20٪ وحصة للمنشئ بنسبة 80٪ من الطلبات المدفوعة. تتم التسوية الفعلية يدوياً؛ وأرصدة المحافظ المعروضة في التطبيق سجلات وليست وعداً بسحب آلي. طلبات سحب أرباح المنشئين غير مفعلة في هذا الإصدار.">The current application calculates a 20% platform commission and 80% creator share on paid orders. Actual settlement is manual; wallet balances shown in the app are records and are not a promise of automatic withdrawal. Creator withdrawals are not enabled in this version.</p>
+            </section>
+
+            <section class="section">
+                <h2 data-lang-en="5. Availability and support" data-lang-ar="5. الإتاحة والدعم">5. Availability and support</h2>
+                <p data-lang-en="Features may change while the service is in development. If a purchase, download, or product listing has a problem, contact the operator through the contact page. The operator should publish clear refund, cancellation, and support timelines before public launch." data-lang-ar="قد تتغير الميزات أثناء تطوير الخدمة. إذا واجهت مشكلة في شراء أو تنزيل أو عرض منتج، فتواصل مع المشغّل عبر صفحة التواصل. ينبغي للمشغّل نشر سياسة واضحة للاسترداد والإلغاء ومواعيد الدعم قبل الإطلاق العام.">Features may change while the service is in development. If a purchase, download, or product listing has a problem, contact the operator through the contact page. The operator should publish clear refund, cancellation, and support timelines before public launch.</p>
+            </section>
+
+            <section class="section">
+                <h2 data-lang-en="6. Contact" data-lang-ar="6. التواصل">6. Contact</h2>
+                <p><span data-lang-en="For questions about these terms, use the" data-lang-ar="للاستفسارات عن هذه الشروط، استخدم">For questions about these terms, use the</span> <a href="{{ url_for('contact') }}" data-lang-en="contact page" data-lang-ar="صفحة التواصل">contact page</a><span data-lang-en=". The operator should add a monitored business contact before launch." data-lang-ar=". وينبغي لمشغّل المنصة إضافة وسيلة تواصل تجارية فعّالة قبل الإطلاق.">. The operator should add a monitored business contact before launch.</span></p>
+            </section>
+        </article>
+    </main>
+    <footer><p>&copy; 2026 ProAssets. <span data-lang-en="All rights reserved." data-lang-ar="جميع الحقوق محفوظة.">All rights reserved.</span></p></footer>
+</body>
+</html>

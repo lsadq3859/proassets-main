@@ -15,9 +15,10 @@ class Config:
     # المفتاح السري (غيّره لاحقاً!)
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-only-change-me'
     
-    # قاعدة البيانات
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///proassets.db'
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # قاعدة SQLite؛ اضبط DATABASE_PATH على نقطة تركيب قرص Render الدائم في الإنتاج.
+    DATABASE_PATH = os.environ.get('DATABASE_PATH') or 'proassets.db'
+    if not os.path.isabs(DATABASE_PATH):
+        DATABASE_PATH = os.path.join(BASE_DIR, DATABASE_PATH)
     
     # جلسات المستخدم
     PERMANENT_SESSION_LIFETIME = timedelta(days=7)
@@ -26,8 +27,11 @@ class Config:
     SESSION_COOKIE_SAMESITE = 'Lax'
     
     # الملفات المرفوعة
-    MAX_CONTENT_LENGTH = 500 * 1024 * 1024  # 500 MB
-    UPLOAD_FOLDER = os.path.abspath(os.environ.get('UPLOAD_FOLDER') or os.path.join(BASE_DIR, 'private_storage'))
+    MAX_CONTENT_LENGTH = int(os.environ.get('MAX_CONTENT_LENGTH') or 500 * 1024 * 1024)
+    UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER') or 'private_storage'
+    if not os.path.isabs(UPLOAD_FOLDER):
+        UPLOAD_FOLDER = os.path.join(BASE_DIR, UPLOAD_FOLDER)
+    UPLOAD_FOLDER = os.path.abspath(UPLOAD_FOLDER)
     
     # العملات والعمولة
     DEFAULT_CURRENCY = 'USD'
@@ -38,13 +42,6 @@ class Config:
     LANGUAGES = ['en', 'ar']
     BABEL_DEFAULT_LOCALE = 'en'
     BABEL_DEFAULT_TIMEZONE = 'UTC'
-    
-    # الدفع
-    PAYMENT_PROVIDER = os.environ.get('PAYMENT_PROVIDER') or 'TEST'
-    STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
-    STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
-    PAYPAL_CLIENT_ID = os.environ.get('PAYPAL_CLIENT_ID')
-    PAYPAL_CLIENT_SECRET = os.environ.get('PAYPAL_CLIENT_SECRET')
     
     # البيئة
     DEBUG = False
@@ -64,20 +61,31 @@ class DevelopmentConfig(Config):
 
 
 class ProductionConfig(Config):
-    """إعدادات الإنتاج (على PythonAnywhere)"""
+    """Production settings; deployment-specific persistent paths are validated at startup."""
     DEBUG = False
     SESSION_COOKIE_SECURE = True
 
     @classmethod
     def validate(cls):
-        if not os.environ.get('SECRET_KEY'):
-            raise RuntimeError('SECRET_KEY must be configured in production')
+        secret = os.environ.get('SECRET_KEY', '')
+        if len(secret) < 32 or secret in {'dev-only-change-me', 'your-secret-key-here-change-in-production'}:
+            raise RuntimeError('Production requires a unique SECRET_KEY of at least 32 characters')
+
+        # Require explicit absolute paths in all production deployments. On Render,
+        # these must point inside the attached persistent disk mount (for example /var/data).
+        database_path = os.environ.get('DATABASE_PATH', '').strip()
+        upload_folder = os.environ.get('UPLOAD_FOLDER', '').strip()
+        if not database_path or not os.path.isabs(database_path):
+            raise RuntimeError('Production requires an absolute DATABASE_PATH on persistent storage')
+        if not upload_folder or not os.path.isabs(upload_folder):
+            raise RuntimeError('Production requires an absolute UPLOAD_FOLDER on persistent storage')
+        if not (cls.CONTACT_PHONE.strip() or cls.CONTACT_EMAIL.strip()):
+            raise RuntimeError('Production requires CONTACT_PHONE or CONTACT_EMAIL for manual purchase support')
 
 
 class TestingConfig(Config):
     """إعدادات الاختبار"""
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
 
 
 # اختر الإعداد بناءً على البيئة

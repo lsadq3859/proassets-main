@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/brand.css') }}">
+    <style>
+        :root { --purple:#7C3AED; --navy:#0F172A; --ink:#1F2937; --muted:#64748B; --line:#E2E8F0; --surface:#fff; --page:#F1F5F9; }
+        * { box-sizing:border-box; }
+        body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:var(--ink); background:var(--page); }
+        header { background:linear-gradient(120deg,var(--purple),#5B21B6); color:white; }
+        nav { max-width:1240px; min-height:68px; margin:auto; padding:12px 20px; display:flex; gap:20px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+        nav ul { list-style:none; display:flex; gap:18px; padding:0; margin:0; flex-wrap:wrap; }
+        nav a { color:white; text-decoration:none; font-weight:600; }
+        .container { max-width:1240px; margin:auto; padding:28px 20px 52px; }
+        .page-head,.filters,.table-wrap { background:var(--surface); border:1px solid var(--line); border-radius:16px; box-shadow:0 8px 28px rgba(15,23,42,.05); }
+        .page-head { padding:24px; margin-bottom:18px; display:flex; align-items:center; justify-content:space-between; gap:18px; flex-wrap:wrap; }
+        h1 { margin:0; color:var(--navy); font-size:clamp(1.55rem,3vw,2rem); }
+        .subtitle { margin:.45rem 0 0; color:var(--muted); }
+        .pending { background:#FEF3C7; color:#92400E; border-radius:999px; padding:9px 14px; font-weight:700; white-space:nowrap; }
+        .filters { display:flex; flex-wrap:wrap; gap:8px; padding:12px; margin-bottom:18px; }
+        .filters a { color:#475569; padding:9px 13px; border-radius:9px; text-decoration:none; font-weight:650; }
+        .filters a.active { background:#F3E8FF; color:#6D28D9; }
+        .table-wrap { overflow:hidden; }
+        .table-scroll { overflow-x:auto; }
+        table { width:100%; min-width:970px; border-collapse:collapse; }
+        th,td { text-align:left; padding:14px 13px; border-bottom:1px solid var(--line); vertical-align:top; }
+        th { color:#475569; background:#F8FAFC; font-size:.83rem; letter-spacing:.02em; }
+        td { font-size:.92rem; }
+        tbody tr:last-child td { border-bottom:0; }
+        .minor { display:block; color:var(--muted); font-size:.82rem; margin-top:4px; overflow-wrap:anywhere; }
+        .amount { font-weight:750; white-space:nowrap; }
+        .badge { display:inline-block; padding:5px 9px; border-radius:999px; font-size:.78rem; font-weight:750; text-transform:capitalize; }
+        .pending-badge { background:#FEF3C7; color:#92400E; }
+        .completed-badge { background:#DCFCE7; color:#166534; }
+        .rejected-badge { background:#FEE2E2; color:#991B1B; }
+        .actions { min-width:245px; display:grid; gap:7px; }
+        .actions input { width:100%; min-width:205px; padding:8px 10px; border:1px solid #CBD5E1; border-radius:8px; font:inherit; font-size:.82rem; }
+        .action-row { display:flex; gap:7px; }
+        .btn { flex:1; border:0; border-radius:8px; padding:9px 10px; font:inherit; font-size:.82rem; font-weight:700; cursor:pointer; }
+        .btn-confirm { background:#DCFCE7; color:#166534; }
+        .btn-reject { background:#FEE2E2; color:#991B1B; }
+        .btn:disabled { opacity:.6; cursor:wait; }
+        .empty { text-align:center; color:var(--muted); padding:44px 18px; }
+        .notice { display:none; position:sticky; top:12px; z-index:5; max-width:600px; margin:0 auto 16px; padding:12px 16px; border-radius:10px; box-shadow:0 8px 20px rgba(15,23,42,.12); }
+        .notice.success { display:block; color:#166534; background:#DCFCE7; }
+        .notice.error { display:block; color:#991B1B; background:#FEE2E2; }
+        @media(max-width:700px) { nav { align-items:flex-start; } nav ul { gap:12px; } .container { padding:16px 12px 36px; } .page-head { padding:18px; } }
+    </style>
+</head>
+<body>
+    <script src="{{ url_for('static', filename='js/site-i18n.js') }}" defer></script>
+<header>
+    <nav aria-label="Admin navigation">
+        <div class="brand-lockup">{% include 'partials/brand_logo.html' %}<span class="brand-lockup__suffix">Admin</span></div>
+        <ul>
+            <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('admin_orders') }}" aria-current="page">Orders</a></li>
+            <li><a href="{{ url_for('admin_products') }}">Products</a></li>
+            <li><a href="{{ url_for('admin_users') }}">Users</a></li>
+            <li><a href="{{ url_for('admin_withdrawals') }}">Withdrawals</a></li>
+        </ul>
+        <ul><li><a href="{{ url_for('home') }}">Home</a></li><li><form method="post" action="{{ url_for('logout') }}" style="display:inline"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit" style="color:inherit;background:none;border:0;font:inherit;cursor:pointer;padding:0">Logout</button></form></li></ul>
+    </nav>
+</header>
+<main class="container">
+    <div id="notice" class="notice" role="status" aria-live="polite"></div>
+    <section class="page-head">
+        <div>
+            <h1>Manual purchase requests</h1>
+            <p class="subtitle">Verify payment independently before confirming. Confirmation grants the customer library access and credits creator earnings.</p>
+        </div>
+        <div class="pending">{{ pending_count }} pending</div>
+    </section>
+    <nav class="filters" aria-label="Filter orders">
+        {% for value, label in [('pending','Pending'),('completed','Completed'),('rejected','Rejected'),('all','All orders')] %}
+        <a href="{{ url_for('admin_orders', status=value) }}" class="{% if current_status == value %}active{% endif %}">{{ label }}{% if value == 'pending' %} ({{ pending_count }}){% endif %}</a>
+        {% endfor %}
+    </nav>
+    <section class="table-wrap">
+        {% if orders %}
+        <div class="table-scroll">
+            <table>
+                <thead><tr><th>Order</th><th>Customer</th><th>Product / creator</th><th>Amount</th><th>Status</th><th>Submitted</th><th>Actions</th></tr></thead>
+                <tbody>
+                {% for order in orders %}
+                    <tr id="order-{{ order.id }}">
+                        <td>#{{ order.id }}<span class="minor">{{ order.payment_method or 'Manual' }}</span></td>
+                        <td>{{ order.customer_username }}<span class="minor">{{ order.customer_email }}</span></td>
+                        <td><a href="{{ url_for('product_detail', slug=order.slug) }}" data-lang-en="{{ order.title_en }}" data-lang-ar="{{ order.title_ar or order.title_en }}">{{ order.title_en }}</a><span class="minor">Creator: {{ order.creator_username }}</span></td>
+                        <td class="amount"><bdi dir="ltr">{{ order.currency or 'USD' }} {{ '%.2f'|format(order.price) }}</bdi></td>
+                        <td><span class="badge {{ order.payment_status }}-badge">{{ order.payment_status }}</span>{% if order.transaction_id %}<span class="minor">Ref: {{ order.transaction_id }}</span>{% endif %}</td>
+                        <td>{{ order.created_at }}</td>
+                        <td>
+                            {% if order.payment_status == 'pending' %}
+                            <div class="actions">
+                                <input type="text" name="transaction_id" form="confirm-{{ order.id }}" maxlength="160" placeholder="Payment reference (optional)" aria-label="Payment reference for order {{ order.id }}">
+                                <div class="action-row">
+                                    <form id="confirm-{{ order.id }}" method="post" action="{{ url_for('confirm_order', order_id=order.id) }}" data-order-action="confirm" data-order-id="{{ order.id }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-confirm" type="submit">Confirm & fulfill</button></form>
+                                    <form method="post" action="{{ url_for('reject_order', order_id=order.id) }}" data-order-action="reject" data-order-id="{{ order.id }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-reject" type="submit">Reject</button></form>
+                                </div>
+                            </div>
+                            {% else %}<span class="minor">No action available</span>{% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}<div class="empty">No orders found for this status.</div>{% endif %}
+    </section>
+</main>
+<script>
+const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+const notice = document.getElementById('notice');
+function showNotice(message, success) {
+    notice.textContent = message;
+    notice.className = `notice ${success ? 'success' : 'error'}`;
+}
+document.querySelectorAll('form[data-order-action]').forEach(form => {
+    form.addEventListener('submit', async event => {
+        event.preventDefault();
+        const action = form.dataset.orderAction;
+        const orderId = form.dataset.orderId;
+        const isArabic = document.documentElement.lang === 'ar';
+        if (action === 'confirm' && !window.confirm(isArabic
+            ? 'أكد الطلب فقط بعد التحقق من استلام الدفع. سيؤدي التأكيد إلى إتاحة المنتج للعميل. هل تريد المتابعة؟'
+            : 'Confirm only after you have verified that payment was received. This will grant the customer access. Continue?')) return;
+        if (action === 'reject' && !window.confirm(isArabic
+            ? 'هل تريد رفض طلب الشراء المعلّق؟ لن يحصل العميل على المنتج.'
+            : 'Reject this pending purchase request? It will not grant access.')) return;
+        const button = form.querySelector('button');
+        button.disabled = true;
+        try {
+            const referenceInput = document.querySelector(`[form="confirm-${orderId}"][name="transaction_id"]`);
+            const response = await fetch(`/admin/order/${orderId}/${action}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken},
+                body: JSON.stringify({transaction_id: action === 'confirm' ? referenceInput.value.trim() : ''})
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Unable to update this order.');
+            showNotice(data.message, true);
+            setTimeout(() => window.location.reload(), 900);
+        } catch (error) {
+            showNotice(error.message || 'A network error occurred.', false);
+            button.disabled = false;
+        }
+    });
+});
+</script>
+</body>
+</html>

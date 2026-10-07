@@ -16,10 +16,13 @@ import sqlite3
 import sys
 from pathlib import Path
 
+from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash
 
 BASE_DIR = Path(__file__).resolve().parent
-DB_PATH = Path(os.getenv("DATABASE_PATH", BASE_DIR / "proassets.db"))
+load_dotenv(BASE_DIR / ".env")
+_db_path = Path(os.getenv("DATABASE_PATH", "proassets.db"))
+DB_PATH = _db_path if _db_path.is_absolute() else BASE_DIR / _db_path
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 

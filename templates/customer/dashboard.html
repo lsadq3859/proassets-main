@@ -130,6 +130,8 @@
             color: #666;
             font-size: 0.9rem;
         }
+        .stat-currency-list { font-size: 1.2rem; line-height: 1.5; overflow-wrap: anywhere; }
+        .stat-currency-list span { display: block; }
         
         .recent-purchases {
             background: white;
@@ -148,6 +150,8 @@
             width: 100%;
             border-collapse: collapse;
         }
+        .table-scroll { width:100%; max-width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+        .table-scroll table { min-width:680px; }
         
         th {
             background: #F3F4F6;
@@ -254,12 +258,14 @@
             margin-bottom: 0.5rem;
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/brand.css') }}">
 </head>
 <body>
+    <script src="{{ url_for('static', filename='js/site-i18n.js') }}" defer></script>
     <!-- Header -->
     <header>
         <nav>
-            <div class="logo">💎 ProAssets</div>
+            <div class="logo">{% include 'partials/brand_logo.html' %}</div>
             <ul>
                 <li><a href="/">Home</a></li>
                 <li><a href="/products">Shop</a></li>
@@ -268,7 +274,7 @@
             </ul>
             <ul>
                 <li><a href="/account">Account</a></li>
-                <li><a href="/logout">Logout</a></li>
+                <li><form method="post" action="{{ url_for('logout') }}" style="display:inline"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit" style="color:inherit;background:none;border:0;font:inherit;cursor:pointer;padding:0;text-decoration:none">Logout</button></form></li>
             </ul>
         </nav>
     </header>
@@ -303,15 +309,15 @@
         <!-- Stats -->
         <div class="dashboard-grid">
             <div class="stat-card">
-                <div class="stat-number">{{ purchases|length }}</div>
-                <div class="stat-label">Total Purchases</div>
+                <div class="stat-number">{{ purchase_count }}</div>
+                <div class="stat-label" data-lang-en="Total purchase requests" data-lang-ar="إجمالي طلبات الشراء">Total purchase requests</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">${{ purchases|map(attribute='price')|sum }}</div>
-                <div class="stat-label">Total Spent</div>
+                <div class="stat-number stat-currency-list">{% if spent_by_currency %}{% for total in spent_by_currency %}<span><bdi dir="ltr">{{ total.currency }} {{ '%.2f'|format(total.total) }}</bdi></span>{% endfor %}{% else %}<span><bdi dir="ltr">USD 0.00</bdi></span>{% endif %}</div>
+                <div class="stat-label">Completed spend by currency</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">{{ purchases|selectattr('payment_status', 'equalto', 'completed')|list|length }}</div>
+                <div class="stat-number">{{ completed_count }}</div>
                 <div class="stat-label">Completed Orders</div>
             </div>
         </div>
@@ -321,7 +327,7 @@
             <h2>Recent Purchases</h2>
             
             {% if purchases %}
-            <table>
+            <div class="table-scroll"><table>
                 <thead>
                     <tr>
                         <th>Product</th>
@@ -335,11 +341,9 @@
                     {% for purchase in purchases %}
                     <tr>
                         <td>
-                            <a href="/product/{{ purchase.slug }}" class="product-name">
-                                {{ purchase.title_en }}
-                            </a>
+                            {% if purchase.product_status == 'published' %}<a href="/product/{{ purchase.slug }}" class="product-name" data-lang-en="{{ purchase.title_en }}" data-lang-ar="{{ purchase.title_ar or purchase.title_en }}">{{ purchase.title_en }}</a>{% else %}<span data-lang-en="{{ purchase.title_en }}" data-lang-ar="{{ purchase.title_ar or purchase.title_en }}">{{ purchase.title_en }}</span>{% endif %}
                         </td>
-                        <td>${{ purchase.price }}</td>
+                        <td><bdi dir="ltr">{{ purchase.currency or 'USD' }} {{ '%.2f'|format(purchase.price) }}</bdi></td>
                         <td>{{ purchase.created_at }}</td>
                         <td>
                             <span class="status-badge status-{{ purchase.payment_status }}">
@@ -347,12 +351,12 @@
                             </span>
                         </td>
                         <td>
-                            <a href="/product/{{ purchase.slug }}" style="color: #7C3AED;">View</a>
+                            {% if purchase.product_status == 'published' %}<a href="/product/{{ purchase.slug }}" style="color: #7C3AED;">View</a>{% else %}<span class="muted">Listing unavailable</span>{% endif %}
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
-            </table>
+            </table></div>
             {% else %}
             <div class="empty-state">
                 <h3>No Purchases Yet</h3>
@@ -365,7 +369,7 @@
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2024 ProAssets. All rights reserved.</p>
+        <p>&copy; 2026 ProAssets. All rights reserved.</p>
     </footer>
 </body>
 </html>

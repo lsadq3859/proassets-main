@@ -270,12 +270,14 @@
             margin-top: 4rem;
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/brand.css') }}">
 </head>
 <body>
+    <script src="{{ url_for('static', filename='js/site-i18n.js') }}" defer></script>
     <!-- Header/Navigation -->
     <header>
         <nav>
-            <div class="logo">💎 ProAssets</div>
+            <div class="logo">{% include 'partials/brand_logo.html' %}</div>
             <ul>
                 <li><a href="/">Home</a></li>
                 <li><a href="/products">Products</a></li>
@@ -299,9 +301,7 @@
                 <select name="category">
                     <option value="">All Categories</option>
                     {% for category in categories %}
-                    <option value="{{ category.id }}" {% if current_category and category.id == current_category|int %}selected{% endif %}>
-                        {{ category.name_en }}
-                    </option>
+                    <option value="{{ category.id }}" data-lang-en="{{ category.name_en }}" data-lang-ar="{{ category.name_ar or category.name_en }}" {% if current_category and category.id == current_category|int %}selected{% endif %}>{{ category.name_en }}</option>
                     {% endfor %}
                 </select>
                 <button type="submit">Search</button>
@@ -332,12 +332,12 @@
             <div class="product-card">
                 <div class="product-image">📦</div>
                 <div class="product-info">
-                    <div class="product-category">{{ product.name_en if product.name_en else 'Product' }}</div>
-                    <h3 class="product-title">{{ product.title_en }}</h3>
-                    <p class="product-description">{{ product.description_en }}</p>
+                    <div class="product-category" data-lang-en="{{ product.category_name_en or 'Product' }}" data-lang-ar="{{ product.category_name_ar or product.category_name_en or 'منتج' }}">{{ product.category_name_en or 'Product' }}</div>
+                    <h3 class="product-title" data-lang-en="{{ product.title_en }}" data-lang-ar="{{ product.title_ar or product.title_en }}">{{ product.title_en }}</h3>
+                    <p class="product-description" data-lang-en="{{ product.description_en or '' }}" data-lang-ar="{{ product.description_ar or product.description_en or '' }}">{{ product.description_en or '' }}</p>
                     <div class="product-footer">
                         <div>
-                            <div class="price">${{ product.price }}</div>
+                            <div class="price"><bdi dir="ltr">{{ product.currency or 'USD' }} {{ '%.2f'|format(product.price) }}</bdi></div>
                             <div class="rating">⭐ {{ product.rating or 'N/A' }}</div>
                         </div>
                         <a href="/product/{{ product.slug }}" class="btn">View</a>
@@ -381,7 +381,7 @@
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2024 ProAssets. All rights reserved.</p>
+        <p>&copy; 2026 ProAssets. All rights reserved.</p>
     </footer>
 </body>
 </html>

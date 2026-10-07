@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
@@ -39,7 +40,7 @@
         nav a {
             color: white;
             text-decoration: none;
-            margin-left: 2rem;
+            margin-inline-start: 1rem;
         }
         
         .container {
@@ -152,6 +153,7 @@
             color: white;
             font-size: 3rem;
             margin-bottom: 1rem;
+            object-fit: cover;
         }
         
         .avatar-upload {
@@ -262,13 +264,30 @@
             padding: 2rem;
             margin-top: 4rem;
         }
+        select { max-width: 100%; font: inherit; }
+        [hidden] { display: none !important; }
+        .tab-btn { white-space: nowrap; }
+        @media (max-width: 700px) {
+            nav { padding: 0 1rem; display:flex; flex-wrap:wrap; gap:.5rem; }
+            nav > div:last-child { display:flex; flex-wrap:wrap; gap:.2rem; }
+            nav a { margin-inline-start: .6rem; }
+            .container { padding: 1rem; }
+            .page-header,.tab-content { padding: 1.25rem; }
+            .tabs { gap:.35rem; overflow-x:auto; padding:.6rem; margin-bottom:1rem; }
+            .tab-btn { padding:.65rem .8rem; }
+            .form-row { grid-template-columns:1fr; gap:0; }
+            .danger-zone { padding:1rem; }
+            .btn { margin-inline-end:.35rem; }
+        }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/brand.css') }}">
 </head>
 <body>
+    <script src="{{ url_for('static', filename='js/site-i18n.js') }}" defer></script>
     <!-- Header -->
     <header>
         <nav>
-            <div class="logo">💎 ProAssets</div>
+            <div class="logo">{% include 'partials/brand_logo.html' %}</div>
             <div>
                 <a href="/dashboard">Dashboard</a>
                 <a href="/library">Library</a>
@@ -289,11 +308,11 @@
         <div class="alert alert-error" id="errorAlert"></div>
 
         <!-- Tabs -->
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('profile')">👤 Profile</button>
-            <button class="tab-btn" onclick="switchTab('security')">🔐 Security</button>
-            <button class="tab-btn" onclick="switchTab('preferences')">⚙️ Preferences</button>
-            <button class="tab-btn" onclick="switchTab('danger')">⚠️ Danger Zone</button>
+        <div class="tabs" role="tablist" aria-label="Account settings">
+            <button type="button" class="tab-btn active" role="tab" aria-selected="true" aria-controls="profile" onclick="switchTab('profile', this)">👤 Profile</button>
+            <button type="button" class="tab-btn" role="tab" aria-selected="false" aria-controls="security" onclick="switchTab('security', this)">🔐 Security</button>
+            <button type="button" class="tab-btn" role="tab" aria-selected="false" aria-controls="preferences" onclick="switchTab('preferences', this)">⚙️ Preferences</button>
+            <button type="button" class="tab-btn" role="tab" aria-selected="false" aria-controls="danger" onclick="switchTab('danger', this)">⚠️ Danger Zone</button>
         </div>
 
         <!-- Profile Tab -->
@@ -301,14 +320,21 @@
             <h2 style="color: #7C3AED; margin-bottom: 1.5rem;">Profile Information</h2>
             
             <div class="avatar-upload">
-                <div class="profile-avatar">👤</div>
+                {% if user.profile_image %}
+                <img class="profile-avatar" id="avatarPreview" src="{{ url_for('account_avatar') }}" alt="Profile avatar">
+                {% else %}
+                <div class="profile-avatar" id="avatarFallback" aria-hidden="true">👤</div>
+                <img class="profile-avatar" id="avatarPreview" alt="Profile avatar" hidden>
+                {% endif %}
                 <div class="file-input-wrapper">
                     <label for="avatarInput" class="file-input-label">📷 Upload Avatar</label>
-                    <input type="file" id="avatarInput" accept="image/*">
+                    <input type="file" id="avatarInput" accept="image/png,image/jpeg,image/webp" aria-label="Upload profile avatar">
                 </div>
+                <small style="display:block;color:#666;margin-top:.5rem">PNG, JPEG or WebP; maximum 2 MB.</small>
             </div>
 
-            <form id="profileForm">
+            <form id="profileForm" method="post" action="{{ url_for('update_account') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="firstName">First Name</label>
@@ -347,21 +373,22 @@
                 ℹ️ Keep your account secure by updating your password regularly
             </div>
 
-            <form id="securityForm">
+            <form id="securityForm" method="post" action="{{ url_for('update_password') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="form-group">
                     <label for="currentPassword">Current Password *</label>
-                    <input type="password" id="currentPassword" name="current_password" required>
+                    <input type="password" id="currentPassword" name="current_password" autocomplete="current-password" required>
                 </div>
 
                 <div class="form-group">
                     <label for="newPassword">New Password *</label>
-                    <input type="password" id="newPassword" name="new_password" required>
+                    <input type="password" id="newPassword" name="new_password" minlength="8" maxlength="256" autocomplete="new-password" required>
                     <small style="color: #666;">At least 8 characters</small>
                 </div>
 
                 <div class="form-group">
                     <label for="confirmPassword">Confirm New Password *</label>
-                    <input type="password" id="confirmPassword" name="confirm_password" required>
+                    <input type="password" id="confirmPassword" name="confirm_password" minlength="8" maxlength="256" autocomplete="new-password" required>
                 </div>
 
                 <div>
@@ -375,7 +402,7 @@
             <h3 style="color: #333; margin-bottom: 1rem;">Active Sessions</h3>
             <p style="color: #666; margin-bottom: 1rem;">
                 You are currently logged in on this device. 
-                <a href="/logout" style="color: #7C3AED;">Logout all other sessions</a>
+                <form method="post" action="{{ url_for('logout') }}" style="display:inline"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit" style="color:#7C3AED;background:none;border:0;font:inherit;cursor:pointer;padding:0;text-decoration:underline">Log out of this device</button></form>
             </p>
         </div>
 
@@ -383,35 +410,38 @@
         <div id="preferences" class="tab-content">
             <h2 style="color: #7C3AED; margin-bottom: 1.5rem;">Preferences</h2>
             
-            <form id="preferencesForm">
+            <form id="preferencesForm" method="post" action="{{ url_for('update_preferences') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="info-box">
+                    Saved notification choices are recorded, but this app does not currently send email alerts. Currency is a preference only; prices remain in the currency shown on each listing (no conversion is performed).
+                </div>
                 <div class="form-group">
                     <label>
-                        <input type="checkbox" name="email_notifications" checked>
+                        <input type="checkbox" name="email_notifications" value="1" {% if user.email_notifications %}checked{% endif %}>
                         📧 Email me about new products
                     </label>
                 </div>
 
                 <div class="form-group">
                     <label>
-                        <input type="checkbox" name="marketing_emails" checked>
+                        <input type="checkbox" name="marketing_emails" value="1" {% if user.marketing_emails %}checked{% endif %}>
                         🎉 Send me special offers and promotions
                     </label>
                 </div>
 
                 <div class="form-group">
                     <label>
-                        <input type="checkbox" name="order_updates" checked>
+                        <input type="checkbox" name="order_updates" value="1" {% if user.order_updates %}checked{% endif %}>
                         📦 Notify me about order updates
                     </label>
                 </div>
 
                 <div class="form-group">
                     <label for="currency">Preferred Currency</label>
-                    <select style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px;">
-                        <option value="USD">USD - US Dollar</option>
-                        <option value="EUR">EUR - Euro</option>
-                        <option value="GBP">GBP - British Pound</option>
-                        <option value="AED">AED - UAE Dirham</option>
+                    <select id="currency" name="currency" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px;">
+                        {% for code,label in [('USD','US Dollar'),('EUR','Euro'),('GBP','British Pound'),('AED','UAE Dirham')] %}
+                        <option value="{{ code }}" {% if user.preferred_currency == code %}selected{% endif %}>{{ code }} - {{ label }}</option>
+                        {% endfor %}
                     </select>
                 </div>
 
@@ -431,98 +461,136 @@
 
                 <h4 style="color: #991B1B; margin-bottom: 1rem;">Delete Account</h4>
                 <p style="color: #666; margin-bottom: 1rem;">
-                    Permanently delete your account and all associated data. This cannot be undone.
+                    Deletion disables your sign-in and anonymizes profile details. Essential order records are retained in anonymized form. Creator accounts with listings or payout history and accounts with pending purchase requests must contact support first. Administrator accounts cannot self-delete.
                 </p>
-                <button type="button" class="btn btn-danger" onclick="deleteAccount()">
-                    🗑️ Delete My Account
-                </button>
+                <form id="deleteAccountForm" method="post" action="{{ url_for('delete_account') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="form-group">
+                        <label for="deletePassword">Current password</label>
+                        <input type="password" id="deletePassword" name="current_password" autocomplete="current-password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="deleteConfirmation">Type DELETE to confirm</label>
+                        <input type="text" id="deleteConfirmation" name="confirmation" autocomplete="off" required>
+                    </div>
+                    <button type="submit" class="btn btn-danger">🗑️ Delete My Account</button>
+                </form>
             </div>
         </div>
     </div>
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2024 ProAssets. All rights reserved.</p>
+        <p>&copy; 2026 ProAssets. All rights reserved.</p>
     </footer>
 
     <script>
-        function switchTab(tabName) {
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
-            // Show selected tab
+        function switchTab(tabName, button) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(tabButton => {
+                tabButton.classList.remove('active');
+                tabButton.setAttribute('aria-selected', 'false');
+            });
             document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
+            button.classList.add('active');
+            button.setAttribute('aria-selected', 'true');
         }
 
-        // Profile form
-        document.getElementById('profileForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const data = {
-                first_name: document.getElementById('firstName').value,
-                last_name: document.getElementById('lastName').value,
-                bio: document.getElementById('bio').value
-            };
-
-            try {
-                const response = await fetch('/account/update', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-
-                if (response.ok) {
-                    showAlert('✅ Profile updated successfully!', 'success');
-                } else {
-                    showAlert('❌ Error updating profile', 'error');
-                }
-            } catch (error) {
-                showAlert('❌ An error occurred', 'error');
-            }
-        });
-
-        // Security form
-        document.getElementById('securityForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-
-            if (newPassword !== confirmPassword) {
-                showAlert('❌ Passwords do not match', 'error');
-                return;
-            }
-
-            showAlert('✅ Password update feature coming soon!', 'success');
-        });
-
-        // Delete account
-        function deleteAccount() {
-            const confirmed = confirm('⚠️ Are you absolutely sure? This cannot be undone!\n\nType "DELETE" to confirm.');
-            if (confirmed) {
-                showAlert('🗑️ Account deletion feature coming soon!', 'success');
-            }
-        }
-
-        // Show alerts
         function showAlert(message, type) {
-            const alert = type === 'success' 
-                ? document.getElementById('successAlert')
-                : document.getElementById('errorAlert');
-            
+            const alert = document.getElementById(type === 'success' ? 'successAlert' : 'errorAlert');
             alert.textContent = message;
             alert.style.display = 'block';
-            
-            setTimeout(() => {
-                alert.style.display = 'none';
-            }, 3000);
+            window.clearTimeout(alert.hideTimer);
+            alert.hideTimer = window.setTimeout(() => { alert.style.display = 'none'; }, 5000);
         }
+
+        async function submitJsonForm(form) {
+            const payload = Object.fromEntries(new FormData(form).entries());
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken},
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.message || 'The request could not be completed.');
+            return result;
+        }
+
+        document.getElementById('profileForm').addEventListener('submit', async event => {
+            event.preventDefault();
+            try {
+                const result = await submitJsonForm(event.currentTarget);
+                showAlert(result.message || 'Profile updated successfully.', 'success');
+            } catch (error) {
+                showAlert(error.message || 'An error occurred. Please try again.', 'error');
+            }
+        });
+
+        document.getElementById('securityForm').addEventListener('submit', async event => {
+            event.preventDefault();
+            const form = event.currentTarget;
+            try {
+                const result = await submitJsonForm(form);
+                showAlert(result.message, 'success');
+                form.reset();
+                window.setTimeout(() => window.location.assign('{{ url_for("login") }}'), 1600);
+            } catch (error) {
+                showAlert(error.message || 'An error occurred. Please try again.', 'error');
+            }
+        });
+
+        document.getElementById('preferencesForm').addEventListener('submit', async event => {
+            event.preventDefault();
+            try {
+                const result = await submitJsonForm(event.currentTarget);
+                showAlert(result.message, 'success');
+            } catch (error) {
+                showAlert(error.message || 'An error occurred. Please try again.', 'error');
+            }
+        });
+
+        document.getElementById('deleteAccountForm').addEventListener('submit', async event => {
+            event.preventDefault();
+            const isArabic = document.documentElement.lang === 'ar';
+            const confirmationText = isArabic
+                ? 'هل تريد حذف حسابك؟ ستُخفى بيانات ملفك الشخصي وقد تُحتفظ بسجلات الطلبات الأساسية.'
+                : 'Delete your account? Profile details will be anonymized; essential order records may be retained.';
+            if (!window.confirm(confirmationText)) return;
+            const form = event.currentTarget;
+            try {
+                const result = await submitJsonForm(form);
+                showAlert(result.message, 'success');
+                form.reset();
+                window.setTimeout(() => window.location.assign('{{ url_for("home") }}'), 1800);
+            } catch (error) {
+                showAlert(error.message || 'An error occurred. Please try again.', 'error');
+            }
+        });
+
+        document.getElementById('avatarInput').addEventListener('change', async event => {
+            const file = event.target.files[0];
+            if (!file) return;
+            const formData = new FormData();
+            formData.append('avatar', file);
+            try {
+                const response = await fetch('{{ url_for("account_avatar") }}', {
+                    method: 'POST', headers: {'X-CSRF-Token': csrfToken}, body: formData
+                });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.message || 'Unable to upload avatar.');
+                const preview = document.getElementById('avatarPreview');
+                preview.src = `${result.url}?v=${Date.now()}`;
+                preview.hidden = false;
+                document.getElementById('avatarFallback')?.remove();
+                showAlert(result.message, 'success');
+            } catch (error) {
+                showAlert(error.message || 'An error occurred. Please try again.', 'error');
+            } finally {
+                event.target.value = '';
+            }
+        });
     </script>
 </body>
 </html>

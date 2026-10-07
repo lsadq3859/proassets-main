@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
@@ -331,12 +332,14 @@
             border: 1px solid #FECACA;
         }
     </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/brand.css') }}">
 </head>
 <body>
+    <script src="{{ url_for('static', filename='js/site-i18n.js') }}" defer></script>
     <!-- Header -->
     <header>
         <nav>
-            <div class="logo">💎 ProAssets</div>
+            <div class="logo">{% include 'partials/brand_logo.html' %}</div>
             <div>
                 <a href="/">Home</a>
                 <a href="/products">Products</a>
@@ -348,7 +351,7 @@
     <div class="container">
         <!-- Breadcrumb -->
         <div class="breadcrumb">
-            <a href="/">Home</a> / <a href="/products">Products</a> / <span>{{ product.title_en }}</span>
+            <a href="/">Home</a> / <a href="/products">Products</a> / <span data-lang-en="{{ product.title_en }}" data-lang-ar="{{ product.title_ar or product.title_en }}">{{ product.title_en }}</span>
         </div>
         
         <!-- Alert Messages -->
@@ -361,12 +364,12 @@
             
             <div class="product-details">
                 <span class="product-type">{{ product.product_type }}</span>
-                <h1>{{ product.title_en }}</h1>
+                <h1 data-lang-en="{{ product.title_en }}" data-lang-ar="{{ product.title_ar or product.title_en }}">{{ product.title_en }}</h1>
                 
                 <div class="product-meta">
                     <div class="meta-item">
                         <span class="meta-label">Category</span>
-                        <span class="meta-value">{{ product.name_en }}</span>
+                        <span class="meta-value" data-lang-en="{{ product.name_en }}" data-lang-ar="{{ product.name_ar or product.name_en }}">{{ product.name_en }}</span>
                     </div>
                     <div class="meta-item">
                         <span class="meta-label">Rating</span>
@@ -376,24 +379,25 @@
                 
                 <div class="creator-info">
                     <p><strong>Creator:</strong></p>
-                    <p class="creator-name">{{ product.first_name }} {{ product.last_name }}</p>
+                    {% set creator_display_name = ((product.first_name or '') ~ ' ' ~ (product.last_name or ''))|trim %}
+                    <p class="creator-name">{{ creator_display_name or product.username }}</p>
                     <p>@{{ product.username }}</p>
                 </div>
                 
                 <div class="description">
                     <h3>Description</h3>
-                    <p>{{ product.description_en }}</p>
+                    <p data-lang-en="{{ product.description_en or '' }}" data-lang-ar="{{ product.description_ar or product.description_en or '' }}">{{ product.description_en or '' }}</p>
                 </div>
                 
                 <div class="price-section">
-                    <div class="price">${{ product.price }}</div>
+                    <div class="price"><bdi dir="ltr">{{ product.currency or 'USD' }} {{ '%.2f'|format(product.price) }}</bdi></div>
                 </div>
                 
                 <div class="buttons">
-                    <button class="btn btn-primary" onclick="addToCart({{ product.id }})">
+                    <button type="button" class="btn btn-primary" onclick="addToCart({{ product.id }})">
                         Add to Cart 🛒
                     </button>
-                    <button class="btn btn-secondary" onclick="buyNow({{ product.id }})">
+                    <button type="button" class="btn btn-secondary" data-buy-now="{{ product.id }}" onclick="buyNow({{ product.id }})">
                         Buy Now
                     </button>
                 </div>
@@ -429,7 +433,7 @@
                     <div class="related-image">📦</div>
                     <div class="related-info">
                         <div class="related-title">{{ prod.title_en }}</div>
-                        <div class="related-price">${{ prod.price }}</div>
+                        <div class="related-price"><bdi dir="ltr">{{ prod.currency or 'USD' }} {{ '%.2f'|format(prod.price) }}</bdi></div>
                         <a href="/product/{{ prod.slug }}" style="color: #7C3AED; text-decoration: none;">View →</a>
                     </div>
                 </div>
@@ -441,7 +445,7 @@
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2024 ProAssets. All rights reserved.</p>
+        <p>&copy; 2026 ProAssets. All rights reserved.</p>
     </footer>
 
     <script>
@@ -454,29 +458,37 @@
             }, 3000);
         }
         
-        async function addToCart(productId) {
+        async function addToCart(productId, showFeedback = true) {
             try {
                 const response = await fetch(`/cart/add/${productId}`, {
-                    method: 'POST'
+                    method: 'POST',
+                    headers: {'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content}
                 });
-                
                 const data = await response.json();
-                
-                if (response.ok) {
-                    showAlert('Product added to cart! 🎉', 'success');
-                } else {
-                    showAlert(data.message, 'error');
+                if (!response.ok) {
+                    if (showFeedback) showAlert(data.message || 'Error adding to cart', 'error');
+                    return false;
                 }
+                if (showFeedback) {
+                    showAlert(data.already_in_cart ? 'Product already in cart' : 'Product added to cart! 🎉', 'success');
+                }
+                return true;
             } catch (error) {
-                showAlert('Error adding to cart', 'error');
+                if (showFeedback) showAlert('Error adding to cart', 'error');
+                return false;
             }
         }
-        
-        function buyNow(productId) {
-            addToCart(productId);
-            setTimeout(() => {
-                window.location.href = '/checkout';
-            }, 1500);
+
+        async function buyNow(productId) {
+            const button = document.querySelector(`[data-buy-now="${productId}"]`);
+            if (button) button.disabled = true;
+            const added = await addToCart(productId, false);
+            if (added) {
+                window.location.assign('/checkout');
+                return;
+            }
+            if (button) button.disabled = false;
+            showAlert('The product could not be added to your cart. Please try again.', 'error');
         }
     </script>
 </body>

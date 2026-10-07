@@ -1,216 +1,172 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" dir="ltr">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0F172A">
+    <title>{{ title }} — ProAssets</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/brand.css') }}">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        body { min-height: 100vh; background: #F1F5F9; font-family: Inter, "Segoe UI", Tahoma, sans-serif; }
+        .upload-header { background: #0F172A; color: #fff; }
+        .upload-header nav { display: flex; align-items: center; justify-content: space-between; gap: 1rem; max-width: 1200px; margin: auto; padding: .85rem 1.25rem; }
+        .upload-nav-links { display: flex; flex-wrap: wrap; gap: 1.2rem; align-items: center; }
+        .upload-nav-links a { color: #CBD5E1; text-decoration: none; font-weight: 600; }
+        .upload-nav-links a:hover { color: #fff; }
+        .upload-wrap { width: min(100% - 32px, 840px); margin: 2rem auto 4rem; }
+        .upload-intro { margin-bottom: 1.35rem; }
+        .upload-intro h1 { margin: 0 0 .45rem; color: #0F172A; font-size: clamp(1.8rem, 4vw, 2.4rem); }
+        .upload-intro p { margin: 0; color: #64748B; line-height: 1.7; }
+        .upload-form { padding: clamp(1rem, 3vw, 2rem); border: 1px solid #E2E8F0; border-radius: 20px; background: #fff; box-shadow: 0 18px 48px rgba(15,23,42,.08); }
+        .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+        .field { min-width: 0; margin-bottom: 1rem; }
+        .field--full { grid-column: 1 / -1; }
+        .field label { display: block; margin-bottom: .45rem; color: #334155; font-size: .9rem; font-weight: 750; }
+        .field input, .field select, .field textarea { width: 100%; min-height: 46px; padding: .75rem .85rem; border: 1px solid #CBD5E1; border-radius: 11px; background: #fff; color: #0F172A; outline: none; }
+        .field textarea { min-height: 108px; resize: vertical; }
+        .field input:focus, .field select:focus, .field textarea:focus { border-color: #3882F6; box-shadow: 0 0 0 3px rgba(56,130,246,.12); }
+        .field small { display: block; margin-top: .35rem; color: #64748B; font-size: .78rem; line-height: 1.5; }
+        .upload-file { padding: 1.1rem; border: 1px dashed #8B7CF6; border-radius: 14px; background: #F8FAFF; }
+        .upload-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem; margin-top: 1rem; }
+        .upload-actions .pa-button { border: 0; cursor: pointer; }
+        .upload-cancel { color: #64748B; font-weight: 700; text-decoration: none; }
+        .upload-alert { display: none; margin-bottom: 1rem; padding: .85rem 1rem; border-radius: 10px; }
+        .upload-alert.error { display: block; background: #FEF2F2; color: #B91C1C; }
+        .upload-alert.success { display: block; background: #ECFDF5; color: #047857; }
+        .upload-alert.info { display: block; background: #EFF6FF; color: #1D4ED8; }
+        @media (max-width: 620px) {
+            .upload-header nav { flex-wrap: wrap; padding-inline: 1rem; }
+            .upload-nav-links { width: 100%; gap: .8rem; }
+            .upload-wrap { width: min(100% - 24px, 520px); margin-top: 1.25rem; }
+            .form-grid { grid-template-columns: minmax(0, 1fr); gap: 0; }
+            .field--full { grid-column: auto; }
+            .upload-actions { flex-direction: column; align-items: stretch; }
+            .upload-actions .pa-button { width: 100%; }
+            .upload-cancel { text-align: center; padding: .5rem; }
         }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f8f9fa;
-        }
-        
-        header {
-            background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
-            color: white;
-            padding: 1rem 0;
-        }
-        
-        nav {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 2rem;
-        }
-        
-        .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-        }
-        
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin-left: 2rem;
-        }
-        
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-        
-        h1 {
-            color: #7C3AED;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-        
-        .form-container {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .form-section {
-            margin-bottom: 2rem;
-        }
-        
-        .form-section h2 {
-            font-size: 1.1rem;
-            color: #333;
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid #7C3AED;
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #333;
-        }
-        
-        .required {
-            color: #DC2626;
-        }
-        
-        input[type="text"],
-        input[type="number"],
-        textarea,
-        select {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-            font-family: inherit;
-            transition: border 0.3s;
-        }
-        
-        input:focus,
-        textarea:focus,
-        select:focus {
-            outline: none;
-            border-color: #7C3AED;
-            box-shadow: 0 0 5px rgba(124, 58, 237, 0.3);
-        }
-        
-        textarea {
-            resize: vertical;
-            min-height: 120px;
-        }
-        
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-        
-        .file-upload {
-            border: 2px dashed #7C3AED;
-            border-radius: 5px;
-            padding: 2rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            background: #F3F4F6;
-        }
-        
-        .file-upload:hover {
-            background: #E0E7FF;
-            border-color: #6D28D9;
-        }
-        
-        .file-upload.drag-over {
-            background: #E0E7FF;
-            border-color: #6D28D9;
-        }
-        
-        .file-upload-icon {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .file-upload-text {
-            color: #7C3AED;
-            font-weight: 500;
-            margin-bottom: 0.3rem;
-        }
-        
-        .file-upload-hint {
-            font-size: 0.85rem;
-            color: #666;
-        }
-        
-        .file-input {
-            display: none;
-        }
-        
-        .file-list {
-            margin-top: 1rem;
-        }
-        
-        .file-item {
-            background: #F3F4F6;
-            padding: 0.8rem;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-        
-        .file-name {
-            color: #333;
-            font-weight: 500;
-        }
-        
-        .file-size {
-            font-size: 0.85rem;
-            color: #666;
-        }
-        
-        .remove-file {
-            background: #FEE2E2;
-            color: #DC2626;
-            border: none;
-            padding: 0.3rem 0.8rem;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
-        
-        .char-count {
-            font-size: 0.85rem;
-            color: #666;
-            margin-top: 0.3rem;
-        }
-        
-        .form-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid #ddd;
-        }
-        
-        .btn {
-            flex: 1;
-            padding: 1rem;
-            border: none;
-            border-radius: 5px;
-            font-size: 
+    </style>
+</head>
+<body>
+    <script src="{{ url_for('static', filename='js/site-i18n.js') }}" defer></script>
+    <header class="upload-header">
+        <nav>
+            {% include 'partials/brand_logo.html' %}
+            <div class="upload-nav-links">
+                <a href="/creator/dashboard">Dashboard</a>
+                <a href="/creator/products">My products</a>
+                <a href="/creator/earnings">Earnings</a>
+                <form method="post" action="{{ url_for('logout') }}" style="display:inline"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit" style="color:inherit;background:none;border:0;font:inherit;cursor:pointer;padding:0;text-decoration:none">Logout</button></form>
+            </div>
+        </nav>
+    </header>
+    <main class="upload-wrap">
+        <div class="upload-intro">
+            <h1>Upload a digital product</h1>
+            <p>Complete the details below. Your product will be reviewed before it is published.</p>
+        </div>
+        <div id="uploadAlert" class="upload-alert" role="status" aria-live="polite"></div>
+        <form id="uploadForm" class="upload-form" method="post" action="{{ url_for('creator_upload') }}" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="form-grid">
+                <div class="field">
+                    <label for="title_en">Product name (English) *</label>
+                    <input id="title_en" name="title_en" type="text" required maxlength="140" autocomplete="off">
+                </div>
+                <div class="field">
+                    <label for="title_ar">اسم المنتج (العربية) *</label>
+                    <input id="title_ar" name="title_ar" type="text" required maxlength="140" dir="auto" autocomplete="off">
+                </div>
+                <div class="field">
+                    <label for="category_id">Category *</label>
+                    <select id="category_id" name="category_id" required>
+                        <option value="">Choose a category</option>
+                        {% for category in categories %}
+                        <option value="{{ category.id }}" data-lang-en="{{ category.name_en }}" data-lang-ar="{{ category.name_ar or category.name_en }}">{{ category.name_en }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="product_type">Product type *</label>
+                    <select id="product_type" name="product_type" required>
+                        <option value="">Choose a type</option>
+                        <option value="ebook">Ebook / document</option>
+                        <option value="template">Template</option>
+                        <option value="design">Design asset</option>
+                        <option value="software">Code / software</option>
+                        <option value="course">Course / training</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="price">Price (USD) *</label>
+                    <input id="price" name="price" type="number" min="0" max="999999" step="0.01" required inputmode="decimal">
+                    <small>Use 0.00 for a free product. Payments are currently handled manually.</small>
+                </div>
+                <div class="field field--full">
+                    <label for="description_en">Description (English)</label>
+                    <textarea id="description_en" name="description_en" maxlength="3000"></textarea>
+                </div>
+                <div class="field field--full">
+                    <label for="description_ar">الوصف (العربية)</label>
+                    <textarea id="description_ar" name="description_ar" maxlength="3000" dir="auto"></textarea>
+                </div>
+                <div class="field field--full">
+                    <label for="file">Product file *</label>
+                    <div class="upload-file">
+                        <input id="file" name="file" type="file" required accept=".pdf,.epub,.docx,.xlsx,.pptx,.zip,.png,.jpg,.jpeg,.svg">
+                        <small>Allowed: PDF, EPUB, Office files, ZIP, PNG, JPG, SVG. Maximum upload size: 500 MB.</small>
+                        <small id="fileName">No file selected.</small>
+                    </div>
+                </div>
+            </div>
+            <div class="upload-actions">
+                <button class="pa-button" type="submit" id="submitUpload">Submit for review</button>
+                <a class="upload-cancel" href="/creator/products">Cancel</a>
+            </div>
+        </form>
+    </main>
+    <script>
+        const uploadForm = document.getElementById('uploadForm');
+        const fileInput = document.getElementById('file');
+        const fileName = document.getElementById('fileName');
+        const uploadAlert = document.getElementById('uploadAlert');
+        const submitButton = document.getElementById('submitUpload');
+
+        fileInput.addEventListener('change', () => {
+            const file = fileInput.files && fileInput.files[0];
+            fileName.textContent = file ? `${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)` : 'No file selected.';
+        });
+
+        uploadForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const file = fileInput.files && fileInput.files[0];
+            if (!file) return;
+            if (file.size > 500 * 1024 * 1024) {
+                uploadAlert.className = 'upload-alert error';
+                uploadAlert.textContent = 'The selected file exceeds the 500 MB limit.';
+                return;
+            }
+            submitButton.disabled = true;
+            submitButton.textContent = 'Uploading…';
+            uploadAlert.className = 'upload-alert';
+            try {
+                const response = await fetch('/creator/upload', { method: 'POST', headers: {'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content}, body: new FormData(uploadForm) });
+                const data = await response.json();
+                uploadAlert.className = `upload-alert ${response.ok ? 'success' : 'error'}`;
+                uploadAlert.textContent = data.message || (response.ok ? 'Product submitted for review.' : 'Unable to upload this product.');
+                if (response.ok) {
+                    uploadForm.reset();
+                    fileName.textContent = 'No file selected.';
+                }
+            } catch (_) {
+                uploadAlert.className = 'upload-alert error';
+                uploadAlert.textContent = 'A network error occurred. Please try again.';
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Submit for review';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,1 +1,38 @@
-<!doctype html><html lang="en" dir="ltr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{{ title }}</title><link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"></head><body><main class="container"><h1>Creator earnings</h1><div class="card"><h2>Available balance</h2><p class="text-primary">${{ '%.2f'|format(wallet.balance if wallet else 0) }}</p><p class="text-muted">Withdrawals are temporarily disabled until payment processing is configured.</p></div><h2>Withdrawal history</h2>{% if withdrawals %}<div class="grid">{% for withdrawal in withdrawals %}<div class="card">${{ '%.2f'|format(withdrawal.amount) }} — {{ withdrawal.status }}</div>{% endfor %}</div>{% else %}<p>No withdrawal requests yet.</p>{% endif %}<p><a href="/creator/dashboard">Back to dashboard</a></p></main></body></html>
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/brand.css') }}">
+    <style>
+        body{background:#F1F5F9;color:#1F2937;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;margin:0}.earnings-shell{max-width:1060px;margin:28px auto;padding:0 16px 48px}.earnings-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 0 22px;flex-wrap:wrap}.earnings-nav{display:flex;gap:16px;flex-wrap:wrap}.earnings-nav a{color:#6D28D9;text-decoration:none;font-weight:700}.panel{background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:clamp(18px,4vw,30px);box-shadow:0 9px 28px rgba(15,23,42,.05);margin-bottom:16px}.panel h1,.panel h2{margin-top:0;color:#0F172A}.balance{font-size:clamp(2rem,6vw,3rem);font-weight:850;color:#6D28D9}.warning{padding:14px 16px;border-radius:10px;background:#FEF3C7;color:#92400E;margin-top:14px}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:540px}th,td{padding:12px;text-align:start;border-bottom:1px solid #E2E8F0}th{background:#F8FAFC;color:#475569}.empty{color:#64748B;padding:16px 0}.status{display:inline-block;padding:4px 9px;border-radius:99px;background:#E5E7EB;color:#374151;font-size:.82rem;font-weight:750;text-transform:capitalize}
+        @media(max-width:600px){.earnings-head{align-items:flex-start}.earnings-nav{gap:10px}.panel{padding:16px}}
+    </style>
+</head>
+<body>
+<script src="{{ url_for('static', filename='js/site-i18n.js') }}" defer></script>
+<main class="earnings-shell">
+    <header class="earnings-head">
+        <div class="brand-lockup">{% include 'partials/brand_logo.html' %}</div>
+        <nav class="earnings-nav" aria-label="Creator navigation"><a href="{{ url_for('creator_dashboard') }}">Dashboard</a><a href="{{ url_for('creator_products') }}">My Products</a><a href="{{ url_for('account_settings') }}">Account</a></nav>
+    </header>
+    <section class="panel">
+        <h1>Creator earnings ledger</h1>
+        <p>Recorded balances summarize confirmed orders. They are not paid funds, and this version does not provide a withdrawal or automatic payout function.</p>
+        <h2>Recorded balance</h2>
+        <div class="balance"><bdi dir="ltr">{{ (wallet.currency if wallet else 'USD') }} {{ '%.2f'|format((wallet.balance or 0) if wallet else 0) }}</bdi></div>
+        <div class="warning">Payouts are disabled. Do not treat wallet balances as paid funds; contact support about manual settlement.</div>
+    </section>
+    <section class="panel">
+        <h2>Withdrawal history</h2>
+        {% if withdrawals %}
+        <div class="table-wrap"><table><thead><tr><th>Amount</th><th>Method</th><th>Status</th><th>Requested</th></tr></thead><tbody>
+            {% for withdrawal in withdrawals %}<tr><td><bdi dir="ltr">{{ withdrawal.currency or 'USD' }} {{ '%.2f'|format(withdrawal.amount) }}</bdi></td><td>{{ (withdrawal.withdrawal_method or 'Manual').replace('_',' ').title() }}</td><td><span class="status">{{ withdrawal.status }}</span></td><td>{{ withdrawal.created_at }}</td></tr>{% endfor %}
+        </tbody></table></div>
+        {% else %}<p class="empty">No withdrawal requests are recorded.</p>{% endif %}
+    </section>
+</main>
+</body>
+</html>
