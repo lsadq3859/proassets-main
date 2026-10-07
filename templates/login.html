@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="{{ current_lang }}" dir="{{ 'rtl' if is_arabic else 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -116,6 +116,7 @@
 </head>
 <body>
     <div class="container">
+        <p style="text-align:center"><a href="/language/{{ 'en' if is_arabic else 'ar' }}">{{ 'English' if is_arabic else 'العربية' }}</a></p>
         <h1>💎 ProAssets Login</h1>
         
         <div class="error" id="error"></div>

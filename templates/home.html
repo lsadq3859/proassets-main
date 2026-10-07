@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="{{ current_lang }}" dir="{{ 'rtl' if is_arabic else 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -34,8 +34,16 @@
         }
         
         .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .logo img {
+            width: 190px;
+            height: auto;
+            background: #fff;
+            border-radius: 8px;
+            padding: 4px 8px;
         }
         
         nav ul {
@@ -188,25 +196,26 @@
     <!-- Header/Navigation -->
     <header>
         <nav>
-            <div class="logo">💎 ProAssets</div>
+            <a class="logo" href="/" aria-label="ProAssets"><img src="{{ url_for('static', filename='images/proassets-logo.svg') }}" alt="ProAssets"></a>
             <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/products">Products</a></li>
-                <li><a href="/about">About</a></li>
-                <li><a href="/contact">Contact</a></li>
+                <li><a href="/">{{ 'الرئيسية' if is_arabic else 'Home' }}</a></li>
+                <li><a href="/products">{{ 'المنتجات' if is_arabic else 'Products' }}</a></li>
+                <li><a href="/about">{{ 'عن المنصة' if is_arabic else 'About' }}</a></li>
+                <li><a href="/contact">{{ 'تواصل معنا' if is_arabic else 'Contact' }}</a></li>
             </ul>
             <div class="auth-buttons">
-                <a href="/login" class="btn btn-secondary">Login</a>
-                <a href="/register" class="btn">Sign Up</a>
+                <a href="/language/{{ 'en' if is_arabic else 'ar' }}" class="btn btn-secondary">{{ 'English' if is_arabic else 'العربية' }}</a>
+                <a href="/login" class="btn btn-secondary">{{ 'تسجيل الدخول' if is_arabic else 'Login' }}</a>
+                <a href="/register" class="btn">{{ 'إنشاء حساب' if is_arabic else 'Sign Up' }}</a>
             </div>
         </nav>
     </header>
 
     <!-- Hero Section -->
     <section class="hero">
-        <h1>Welcome to ProAssets 💎</h1>
-        <p>Global Marketplace for Digital Products</p>
-        <a href="/products" class="btn">Explore Now</a>
+        <h1>{{ 'مرحبًا بك في ProAssets' if is_arabic else 'Welcome to ProAssets' }}</h1>
+        <p>{{ 'سوق عالمي للمنتجات الرقمية' if is_arabic else 'Global Marketplace for Digital Products' }}</p>
+        <a href="/products" class="btn">{{ 'استكشف الآن' if is_arabic else 'Explore Now' }}</a>
     </section>
 
     <section class="site-ad" aria-label="إعلان">
@@ -215,7 +224,7 @@
 
     <!-- Featured Products -->
     <section class="section container">
-        <h2>Featured Products</h2>
+        <h2>{{ 'منتجات مميزة' if is_arabic else 'Featured Products' }}</h2>
         <div class="products-grid">
             {% for product in featured_products %}
             <div class="product-card">
@@ -224,7 +233,7 @@
                     <h3>{{ product.title_en }}</h3>
                     <p>{{ product.description_en[:100] }}...</p>
                     <div class="price">${{ product.price }}</div>
-                    <a href="/product/{{ product.slug }}" class="btn">View</a>
+                    <a href="/product/{{ product.slug }}" class="btn">{{ 'عرض' if is_arabic else 'View' }}</a>
                 </div>
             </div>
             {% endfor %}
@@ -233,7 +242,7 @@
 
     <!-- Categories -->
     <section class="section container" style="background: white; margin: 0; padding: 4rem 0;">
-        <h2>Shop by Category</h2>
+        <h2>{{ 'تصفح حسب التصنيف' if is_arabic else 'Shop by Category' }}</h2>
         <div class="products-grid">
             {% for category in categories %}
             <div class="product-card">
@@ -241,7 +250,7 @@
                 <div class="product-info">
                     <h3>{{ category.name_en }}</h3>
                     <p>{{ category.description_en[:100] if category.description_en else 'Browse products' }}</p>
-                    <a href="/products?category={{ category.id }}" class="btn">Explore</a>
+                    <a href="/products?category={{ category.id }}" class="btn">{{ 'استكشف' if is_arabic else 'Explore' }}</a>
                 </div>
             </div>
             {% endfor %}

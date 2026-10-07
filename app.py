@@ -84,6 +84,8 @@ def create_app(config_name=None):
             'contact_email': app.config.get('CONTACT_EMAIL', ''),
             'payment_mode': app.config.get('PAYMENT_MODE', 'manual'),
             'ad_image_url': app.config.get('AD_IMAGE_URL', '/static/images/dhfa-banner.png'),
+            'current_lang': session.get('lang', 'ar'),
+            'is_arabic': session.get('lang', 'ar') == 'ar',
         }
     
     # إنشاء مجلدات مهمة
@@ -92,6 +94,25 @@ def create_app(config_name=None):
     # تهيئة قاعدة البيانات عند البداية
     with app.app_context():
         init_db(app)
+
+    if all(os.environ.get(name) for name in (
+        'BOOTSTRAP_ADMIN_USERNAME', 'BOOTSTRAP_ADMIN_EMAIL', 'BOOTSTRAP_ADMIN_PASSWORD'
+    )):
+        from bootstrap_admin import main as bootstrap_admin
+        bootstrap_admin()
+
+    @app.before_request
+    def choose_language():
+        requested = request.args.get('lang')
+        if requested in {'ar', 'en'}:
+            session['lang'] = requested
+
+    @app.route('/language/<lang>')
+    def set_language(lang):
+        if lang not in {'ar', 'en'}:
+            return redirect(url_for('home'))
+        session['lang'] = lang
+        return redirect(request.referrer or url_for('home'))
     
     # ===== إيقاف المسارات غير الآمنة =====
     @app.before_request
