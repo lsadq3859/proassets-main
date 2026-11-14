@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: proassets
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --workers 2 --timeout 120 --bind 0.0.0.0:$PORT run:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.6
+      - key: APP_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_PATH
+        value: /opt/render/project/src/store.db
+      - key: UPLOAD_FOLDER
+        value: /opt/render/project/src/private_storage
+      - key: CONTACT_PHONE
+        sync: false
+      - key: CONTACT_EMAIL
+        sync: false

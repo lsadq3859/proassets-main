@@ -48,8 +48,8 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        let saved = 'ar';
-        try { saved = localStorage.getItem('proassets-language') || 'ar'; } catch (_) { /* storage may be disabled */ }
+        let saved = 'en';
+        try { saved = localStorage.getItem('proassets-language') || 'en'; } catch (_) { /* storage may be disabled */ }
         applyLanguage(saved);
 
         const languageToggle = document.getElementById('languageToggle');

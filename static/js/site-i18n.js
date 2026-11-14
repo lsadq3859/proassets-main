@@ -180,7 +180,7 @@
     const originalText = new WeakMap();
     const lastAppliedText = new WeakMap();
     const originalAttributes = new WeakMap();
-    let language = 'ar';
+    let language = 'en';
 
     function translate(value, targetLanguage) {
         const trimmed = value.trim();
