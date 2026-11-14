@@ -293,6 +293,16 @@ def create_app(config_name=None):
                              featured_products=featured,
                              categories=categories)
     
+    @app.route('/rafiq')
+    def rafiq():
+        """Rafiq POS & accounting — product page (WhatsApp Business use case)"""
+        return render_template('rafiq.html', title='رفيق — نظام نقاط البيع والمحاسبة')
+
+    @app.route('/rafiq/privacy')
+    def rafiq_privacy():
+        """Rafiq + WhatsApp messaging privacy notice"""
+        return render_template('rafiq_privacy.html', title='خصوصية رفيق ورسائل واتساب')
+
     @app.route('/about')
     def about():
         """صفحة من نحن"""
