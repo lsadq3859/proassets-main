@@ -303,6 +303,17 @@ def create_app(config_name=None):
         """Rafiq + WhatsApp messaging privacy notice"""
         return render_template('rafiq_privacy.html', title='خصوصية رفيق ورسائل واتساب')
 
+    @app.route('/rafiq/terms')
+    def rafiq_terms():
+        """Rafiq terms of use (separate from marketplace terms)"""
+        return render_template('rafiq_terms.html', title='شروط استخدام رفيق')
+
+    @app.route('/rafiq/data-deletion')
+    @app.route('/data-deletion')
+    def rafiq_data_deletion():
+        """Data deletion instructions — required field for Meta / Google Play"""
+        return render_template('rafiq_data_deletion.html', title='حذف البيانات — رفيق')
+
     @app.route('/about')
     def about():
         """صفحة من نحن"""
